@@ -158,3 +158,46 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+
+# React build------------------------------------------------------------------------------------------------->
+/node_modules/
+/build/
+/dist/
+
+# IDE files
+.idea/
+.vscode/
+
+# Compiled JavaScript
+*.js
+*.jsx
+*.json
+
+# React artifacts
+yarn-error.log
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# npm
+npm-debug.log*
+*.log
+
+# Temporary files
+*.tmp
+
+# Environment variables
+.env
+
+# Editor-specific files
+.editorconfig
+
+# Local history of files
+.history/
+
+# React coverage
+coverage/

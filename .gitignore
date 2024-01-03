@@ -169,11 +169,6 @@ cython_debug/
 .idea/
 .vscode/
 
-# Compiled JavaScript
-*.js
-*.jsx
-*.json
-
 # React artifacts
 yarn-error.log
 

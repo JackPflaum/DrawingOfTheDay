@@ -45,11 +45,11 @@ INSTALLED_APPS = [
 
     # For handling Cross-Origin Resource Sharing (CORS)
     # Enables communication between frontend and backend when hosted on different origins (e.g. domains, ports, protocols)
-    'cors_headers',
+    'corsheaders',
 
     # Django Apps
-    'users',
-    'drawings',
+    'backend.users.apps.UsersConfig',
+    'backend.drawings.apps.DrawingsConfig',
 ]
 
 MIDDLEWARE = [

@@ -1,7 +1,7 @@
-import logo from './logo.svg';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import Layout from '.components/Layout';
+import Layout from './components/Layout';
+import HomeContent from './components/HomeContent';
 
 const App = () => {
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from '.components/Header';
-import ImagesGrid from '.components/Images';
+import Header from './Header';
+import Images from './Images';
 
 const HomeContent = () => {
 
@@ -25,15 +25,15 @@ const HomeContent = () => {
     // initiate data fetching of image prompt and images when HomeContent component mounts.
     useEffect(() => {
         fetchData(data.date, 'latest');
-    }, []);
+    }, [data.date]);
 
     const handleOrderChange = (e) => {
         const orderOption = e.target.value;
-        fetchdata(data.date, orderOption);
+        fetchData(data.date, orderOption);
     };
 
     const handleDateChange = (e) => {
-        const date = e.target.date;
+        const date = e.target.value;
         fetchData(date, 'latest');
     };
 

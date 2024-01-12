@@ -3,7 +3,7 @@ from .serializers import UserSignupSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, isAuthenticated
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -19,7 +19,7 @@ def signup(request):
 
     # validate data
     if serializer.is_valid():
-        # data valid, create new user
+        # data valid,therefore create new user
         user = User.objects.create_user(username=serializer.validated_data['username'],
             email=serializer.validated_data['email'], 
             password=make_password(serializer.validated_data['password1']))    # 'make_password()' hashes password for encrypted storage
@@ -31,7 +31,28 @@ def signup(request):
         access_token = RefreshToken.for_user(user).access_token
         refresh_token = RefreshToken.for_user(user)
 
-        return Response({'access_token': str(access_token), 'refresh_token': str(refresh_token)}, status=status.HTTP_201_CREATED)
+        return Response({'access': str(access_token), 'refresh_token': str(refresh_token)}, status=status.HTTP_201_CREATED)
     else:
         # invalid data, return error message
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+@api_view(['POST'])
+@permission_classes([isAuthenticated])    # checks if the request contains a valid user authentication token
+def logout(request):
+    """handle user logout"""
+    try :
+        # get JWT refresh token so it can be invalidated and user cannot access areas requiring user login
+        refresh_token = request.refreshToken.get('refreshToken')
+        
+        if not refresh_token:
+            return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # blacklist(i.e. invalidate) the refresh token
+        RefreshToken(refresh_token).blacklist()
+
+        return Response({'success': 'Successfully logged out'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        

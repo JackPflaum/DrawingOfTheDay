@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import HomeContent from './components/HomeContent';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import NoMatch from './components/NoMatch';
 
 
 const App = () => {

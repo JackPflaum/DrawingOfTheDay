@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import views
-from rest_framework_simpleJWT import views as jwt_views
+from . import views
+from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),

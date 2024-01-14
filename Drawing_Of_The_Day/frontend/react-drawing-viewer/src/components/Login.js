@@ -8,11 +8,18 @@ const Login = () => {
         password: '',
     });
 
+    const [ error, setError ] = useState('');
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            if (!loginData.email || !loginData.password) {
+                setError('All fields are required!');
+                return;
+            };
+
             const response = await axios.post('http://localhost:8000/token/', loginData);
 
             // API returns access token and it's saved to HttpOnly, Secure, and SameSite cookie for greater security.
@@ -48,6 +55,7 @@ const Login = () => {
                     onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
                 <button type="submit" className="btn btn-primary">Login</button>
             </form>
+            {error && <p>{error}</p>}
             <NavLink to="/forgot-password">Forgot password?</NavLink>
             <NavLink to="/signup">Signup here</NavLink>
         </div>

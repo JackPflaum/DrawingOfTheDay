@@ -3,10 +3,19 @@ from .serializers import UserSignupSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, isAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_authorization(request):
+    """check if the user is authenticated"""
+    # if user is authenticated then they will have access to this view and return true value
+    context = {'user': True }
+    return Response(context)
 
 
 @api_view(['POST'])
@@ -24,14 +33,11 @@ def signup(request):
             email=serializer.validated_data['email'], 
             password=make_password(serializer.validated_data['password1']))    # 'make_password()' hashes password for encrypted storage
 
-        # log user in once created
-        login(request, user)
-
         # generate an access token for client-side authentication
         access_token = RefreshToken.for_user(user).access_token
         refresh_token = RefreshToken.for_user(user)
 
-        return Response({'access': str(access_token), 'refresh_token': str(refresh_token)}, status=status.HTTP_201_CREATED)
+        return Response({'access': str(access_token), 'refresh': str(refresh_token)}, status=status.HTTP_201_CREATED)
     else:
         # invalid data, return error message
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -39,7 +45,7 @@ def signup(request):
 
 
 @api_view(['POST'])
-@permission_classes([isAuthenticated])    # checks if the request contains a valid user authentication token
+@permission_classes([IsAuthenticated])    # checks if the request contains a valid user authentication token
 def logout(request):
     """handle user logout"""
     try :

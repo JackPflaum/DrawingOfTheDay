@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from './Header';
 import Images from './Images';
+import UploadModal from './UploadModal';
 
 const HomeContent = () => {
+    const [ openModal, setOpenModal ] = useState(false);
 
     const [ data, setData ] = useState({
-        date: '',
+        date: new Date().toISOString().split('T')[0],  //set inital date to today
         imagePrompt: '',
         imagesList: [],
+        orderOption: '-upload_date',
     });
 
     // 'async' keyword specifies that this is an asynchronous function that will return a promise (enables the use of 'await').
@@ -20,30 +23,47 @@ const HomeContent = () => {
         } catch (error) {
             console.error('Error fetching data: ', error);
         }
-    }
+    };
 
     // initiate data fetching of image prompt and images when HomeContent component mounts.
     useEffect(() => {
-        fetchData(data.date, 'latest');
-    }, [data.date]);
-
-    const handleOrderChange = (e) => {
-        const orderOption = e.target.value;
-        fetchData(data.date, orderOption);
-    };
+        fetchData(data.date, data.orderOption);
+    }, [data.date, data.orderOption]);
 
     const handleDateChange = (e) => {
+        e.preventDefault();
         const date = e.target.value;
-        fetchData(date, 'latest');
+        setData((prev) => ({
+            ...prev,
+            date: date,
+        }));
     };
 
-    return(
+    const handleOrderChange = (e) => {
+        e.preventDefault();
+        const orderOption = e.target.value;
+        setData((prev) => ({
+            ...prev,
+            orderOption: orderOption,
+        }));
+    };
+
+    const openUploadModal = () => {
+        setOpenModal(true);
+    };
+
+    const closeUploadModal = () => {
+        setOpenModal(false);
+    };
+
+    return (
         <>
             <Header date={data.date} imagePrompt={data.imagePrompt} />
-            
+            <button onClick={openUploadModal}>Upload Drawing</button>
+            { openModal && <UploadModal isOpen={openModal} closeModal={closeUploadModal} />}
             <select name="orderOptions" onChange={handleOrderChange}>
-                <option value="latest">Latest</option>
-                <option value="oldest">Oldest</option>
+                <option value="-upload_date">Latest</option>
+                <option value="upload_date">Oldest</option>
             </select>
             <input type="date" name="date" value={data.date} onChange={handleDateChange} />
             <Images imagesList={data.imagesList} />

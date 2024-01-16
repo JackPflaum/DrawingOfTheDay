@@ -1,37 +1,38 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useAuthContext } from '../context/AuthContext';
 
 const Login = () => {
+    const { login, error, clearErrorMessage } = useAuthContext();
     const [ loginData, setLoginData ] = useState({
-        email: '',
+        username: '',
         password: '',
     });
 
-    const [ error, setError ] = useState('');
+    // Login component error messages
+    const [ errorLocal, setErrorLocal ] = useState('');
 
+    // page redirection initialisation
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // check if both fields are filled in
+        if (!loginData.username || !loginData.password) {
+            setErrorLocal('All fields are required!');
+            return;
+        };
+
         try {
-            if (!loginData.email || !loginData.password) {
-                setError('All fields are required!');
-                return;
-            };
+            // call login() function from AuthContext
+            await login(loginData);
 
-            const response = await axios.post('http://localhost:8000/token/', loginData);
+            // clear AuthContext error once logged in
+            clearErrorMessage();
 
-            // API returns access token and it's saved to HttpOnly, Secure, and SameSite cookie for greater security.
-            // HttpOnly means the cookie is inaccessible to Javascript and therefore, reducing XSS attacks.
-            // Secure means the cookie is only sent over HTTPS.
-            // SameSite=Strict means the cookie is only sent to the server if the request originates from the site that set the cookie (mitigates CSRF attacks).
-            const accessToken = response.data.access;
-            document.cookie = `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict`;
-
-            // redirect to home page
+            // redirect to home page after successful login
             navigate('/');
-
         } catch (error) {
             console.error('Login failed: ', error);
         }
@@ -41,21 +42,24 @@ const Login = () => {
         <div>
             <h3>Login</h3>
             <form onSubmit={handleSubmit}>
-                <label>Email:</label>
+                <label>Username:</label>
                 <input
                     type="text"
                     value={loginData.email}
-                    name="email" 
-                    onChange={(e) => setLoginData({...loginData, email: e.target.value})} />
+                    name="username"
+                    placeholder="Enter your email"
+                    onChange={(e) => setLoginData({...loginData, username: e.target.value})} />
                 <label>Password:</label>
                 <input
-                    type="text"
+                    type="password"
                     value={loginData.password}
                     name="password"
+                    placeholder="Enter your password"
                     onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
                 <button type="submit" className="btn btn-primary">Login</button>
             </form>
             {error && <p>{error}</p>}
+            {errorLocal && <p>{errorLocal}</p>}
             <NavLink to="/forgot-password">Forgot password?</NavLink>
             <NavLink to="/signup">Signup here</NavLink>
         </div>

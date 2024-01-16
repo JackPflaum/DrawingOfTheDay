@@ -7,51 +7,33 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 
 
-
-def order(order_option):
-    if order_option == 'latest':
-        return '-upload_date'
-    else:
-        return 'upload_date'
-
-
 @api_view(['GET'])
 def home(request):
     """home view for presenting images uploaded by users"""
-    # get date from date options (default is todays date if not chosen)
+    # get date from date options (default is todays date)
     # default date: gets current date and formats to string
     date_str = request.GET.get('date', datetime.today().strftime('%Y-%m-%d'))
 
     # get the order in which images are displayed (default to most recent upload)
-    order_option = request.GET.get('order_option', 'latest')
-
-    display_order = order(order_option)
-
-    try:
-        # strptime() method converts date string to datetime obj.
-        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-    except ValueError:
-        return Response({'error': 'Invalid date format'}, status=status.HTTP_400_BAD_REQUEST)
-
+    order_option = request.GET.get('order_option', '-upload_date')
 
     # '__date' only filters the images based on date and not date and time.
-    images = Image.objects.filter(upload_date__date=date_obj).order_by(display_order)
+    images = Image.objects.filter(upload_date__date=date_str).order_by(order_option)
     images_data = ImageSerializer(images, many=True).data
 
     # get likes and dislikes count from Like model count function?
 
     # get image prompt text for particular date
-    image_prompt = ImagePrompt.objects.filter(date=date_obj).first()
+    image_prompt = ImagePrompt.objects.filter(date=date_str).first()
     image_prompt_data = ImagePromptSerializer(image_prompt).data if image_prompt else None
 
-    context = {'date': date_obj,
-               'image_prompt': image_prompt_data if image_prompt_data else 'Sorry, No Image Prompt Today.',
+    context = {'date': date_str,
+               'imagePrompt': image_prompt_data if image_prompt_data else 'Sorry, No Image Prompt Today.',
                'images': images_data,
-               'orderOption': display_order,
+               'orderOption': order_option,
                }
     
     return Response(context, status=status.HTTP_200_OK)
-
 
 
 @api_view(['POST'])

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const UploadModal = ({ isOpen, closeModal }) => {
+
+const UploadModal = ({ isOpen, closeModal, ref }) => {
     const [ imageFile, setImageFile ] = useState(null);
   
     const handleImageUpload = async () => {
@@ -31,16 +33,19 @@ const UploadModal = ({ isOpen, closeModal }) => {
     };
   
     return (
-        <div className="modalOverlay">
-            <div className="modalContent">
+        <div>
+            // { isOpen && <div className="modal-backdrop"></div>}
+            <div ref={ref} className="modal-content">
                 <div className="d-flex justify-content-between">
                     <h3>Upload Drawing</h3>
                     <span onClick={closeModal}>&times;</span>
                 </div>
                 <label>Choose an image:</label>
-                <input type="file" name="image" accept="image/png, image/jpeg, image/jpg" onChange={handleFileChange} />
-                <button className="btn btn-secondary" onClick={closeModal}>Close</button>
-                <button className="btn btn-primary" onClick={handleImageUpload}>Upload Image</button>
+                <input type="file" className="from-control-file" name="image" accept="image/png, image/jpeg, image/jpg" onChange={handleFileChange} />
+                <div className="d-flex flex-row-reverse">
+                    <button className="btn btn-primary" onClick={handleImageUpload}>Upload Image</button>
+                    <button className="btn btn-secondary" onClick={closeModal}>Close</button>
+                </div>
             </div>
         </div>
     );

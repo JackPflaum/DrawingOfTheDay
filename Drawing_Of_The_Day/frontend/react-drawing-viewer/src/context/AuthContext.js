@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { axiosResponseInstance } from '../api/axiosResponseInstance';
 import Cookies from 'js-cookie';
 
 const AuthContext = createContext(null);
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuthenticationStatus = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/check-auth/')
+                const response = await axiosResponseInstance.get('http://localhost:8000/api/check-auth/')
                 
                 // if the user is authenticated on the backend then response will be true
                 if (response.data.user) {
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
             // true if in production and false if in development
             const secureAttribute = process.env.NODE_ENV === 'production';
 
-            const response = await axios.post('http://localhost:8000/api/token/', loginData);
+            const response = await axiosResponseInstance.post('http://localhost:8000/api/token/', loginData);
 
             // Rest Framework SimpleJWT returns access token and it's saved to HttpOnly, Secure, and SameSite cookie for greater security.
             // HttpOnly means the cookie is inaccessible to Javascript and therefore, reducing XSS attacks.
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
             const accessToken = Cookies.get('accessToken');
 
             // logout on the server
-            await axios.post('http://localhost:8000/api/logout/', { refreshToken },
+            await axiosResponseInstance.post('http://localhost:8000/api/logout/', { refreshToken },
             { headers: {
                 Authorization: `Bearer ${accessToken}`
             }});

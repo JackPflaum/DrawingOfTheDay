@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { axiosResponseInstance } from '../api/axiosResponseInstance';
 import Header from './Header';
 import Images from './Images';
 import UploadModal from './UploadModal';
-import { useOnClickOutside } from '../custom-hooks/useOnClickOutside';
+import { useOnClickOutside } from '../customHooks/useOnClickOutside';
 
 const HomeContent = () => {
     const [ openModal, setOpenModal ] = useState(false);
@@ -20,7 +20,7 @@ const HomeContent = () => {
     const fetchData = async (date, orderOption) => {
         try {
             // 'await' keyword pauses the execution of the function until axios.get promise is resolved.
-            const response = await axios.get(`http://localhost:8000/home/?date=${date}&order_option=${orderOption}`);
+            const response = await axiosResponseInstance.get(`http://localhost:8000/home/?date=${date}&order_option=${orderOption}`);
             setData(response.data);
         } catch (error) {
             console.error('Error fetching data: ', error);

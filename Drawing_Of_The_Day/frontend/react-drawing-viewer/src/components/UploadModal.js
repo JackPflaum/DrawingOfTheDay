@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { axiosResponseInstance } from '../api/axiosResponseInstance';
+import '../css/UploadModal';
 
 
 const UploadModal = ({ isOpen, closeModal, ref }) => {
@@ -17,7 +18,7 @@ const UploadModal = ({ isOpen, closeModal, ref }) => {
             const formData = new FormData();
             formData.append('imageFile', imageFile);
 
-            const response = await axios.post('http://localhost:8000/upload-image', formData);
+            const response = await axiosResponseInstance.post('http://localhost:8000/upload-image', formData);
             console.log(response.data);
             setImageFile(null);
             closeModal();

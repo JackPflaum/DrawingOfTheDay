@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { axiosResponseInstance } from '../api/axiosResponseInstance';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
@@ -11,7 +11,7 @@ const Signup = () => {
         password2: '',
     });
 
-    const navigate = useNavigate();
+    let navigate = useNavigate();
 
     const [ error, setError ] = useState('');
 
@@ -29,13 +29,16 @@ const Signup = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:8000/signup', signupData);
+            // true if in production and false if in development
+            const secureAttribute = process.env.NODE_ENV === 'production';
+
+            const response = await axiosResponseInstance.post('http://localhost:8000/signup', signupData);
 
             const accessToken = response.data.access;
-            Cookies.set('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/' });
+            Cookies.set('accessToken', accessToken, { httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
             const refreshToken = response.data.refresh;
-            Cookies.set('RefreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/'});
+            Cookies.set('RefreshToken', refreshToken, { httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/'});
 
             navigate('/');
         } catch (error) {

@@ -1,16 +1,19 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
 
     const [ user, setUser ] = useState(null);
+    const [ error, setError ] = useState('')
 
     // check if the user is authenticated when the component mounts
     useEffect(() => {
         const checkAuthenticationStatus = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/check-auth/')
+                const response = await axios.get('http://localhost:8000/api/check-auth/')
                 
                 // if the user is authenticated on the backend then response will be true
                 if (response.data.user) {
@@ -30,34 +33,46 @@ export const AuthProvider = ({ children }) => {
 
     const login = async ( loginData ) => {
         try {
-            const response = await axios.post('http://localhost:8000/token/', loginData);
+            // true if in production and false if in development
+            const secureAttribute = process.env.NODE_ENV === 'production';
+
+            const response = await axios.post('http://localhost:8000/api/token/', loginData);
 
             // Rest Framework SimpleJWT returns access token and it's saved to HttpOnly, Secure, and SameSite cookie for greater security.
             // HttpOnly means the cookie is inaccessible to Javascript and therefore, reducing XSS attacks.
-            // Secure means the cookie is only sent over HTTPS.
+            // Secure means the cookie is only sent over HTTPS if true
             // SameSite=Strict means the cookie is only sent to the server if the request originates from the site that set the cookie (mitigates CSRF attacks).
             // path defines where on the server the cookie is valid.
             const accessToken = response.data.access;
-            Cookies.set('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/' });
+            Cookies.set('accessToken', accessToken, { httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
             const refreshToken = response.data.refresh;
-            Cookies.set('RefreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/' });
+            Cookies.set('refreshToken', refreshToken, { httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
             setUser(true);
 
         } catch (error) {
-            console.error('Login Failed: ', error);
-            throw new Error('Login Failed');
+            // if server side error message set error, otherwise set generic error message
+            if (error.response && error.response.status === 400) {
+                setError('User not found. Please check your credentials.');
+            } else {
+                setError('Login Failed. Please try again.');   
+            }
+            throw new Error('Login Failed. Please try again.');    
         }
     };
     
 
     const logout = async () => {
         try {
-            const refreshToken = Cookies.get('RefreshToken');
+            const refreshToken = Cookies.get('refreshToken');
+            const accessToken = Cookies.get('accessToken');
 
             // logout on the server
-            await axios.post('http://localhost:8000/logout/', { refreshToken });
+            await axios.post('http://localhost:8000/api/logout/', { refreshToken },
+            { headers: {
+                Authorization: `Bearer ${accessToken}`
+            }});
 
             // remove tokens from browser cookie
             Cookies.remove('accessToken', { path: '/' });
@@ -72,14 +87,24 @@ export const AuthProvider = ({ children }) => {
         }
     };
     
+
     const isAuthorized = () => {
         return !!user; // true if the user is authenticated, false otherwise
     };
+
+
+    const clearErrorMessage = () => {
+        setError('');
+    };
+
 
     const contextValues = {
         login,
         logout,
         isAuthorized,
+        clearErrorMessage,
+        error,
+        setError,
     };
 
     return (

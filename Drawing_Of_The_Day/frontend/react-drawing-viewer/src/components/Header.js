@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 
 const Header = ({ date, imagePrompt }) => {
     return (
-        <>
-            <h2>Todays Date: {date}</h2>
+        <div className="text-center">
+            <h4>Todays Date: {date}</h4>
             <p>Prompt Text: {imagePrompt}</p>
-        </>
+        </div>
     );
 };
 

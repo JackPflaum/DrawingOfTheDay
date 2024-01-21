@@ -39,29 +39,39 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h3>Login</h3>
-            <form onSubmit={handleSubmit}>
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={loginData.email}
-                    name="username"
-                    placeholder="Enter your email"
-                    onChange={(e) => setLoginData({...loginData, username: e.target.value})} />
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={loginData.password}
-                    name="password"
-                    placeholder="Enter your password"
-                    onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
-                <button type="submit" className="btn btn-primary">Login</button>
-            </form>
-            {error && <p>{error}</p>}
-            {errorLocal && <p>{errorLocal}</p>}
-            <NavLink to="/forgot-password">Forgot password?</NavLink>
-            <NavLink to="/signup">Signup here</NavLink>
+        <div className="container">
+            <div className="row align-items-center justify-content-center">
+                <div className="col-lg-6 ">
+                    <h3 className="text-center">Login</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label className="form-label">Username</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={loginData.email}
+                                name="username"
+                                placeholder="Enter your email"
+                                onChange={(e) => setLoginData({...loginData, username: e.target.value})} />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Password</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                value={loginData.password}
+                                name="password"
+                                placeholder="Enter your password"
+                                onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
+                        </div>
+                        <button type="submit" className="btn btn-primary">Login</button>
+                    </form>
+                    {error && <p>{error}</p>}
+                    {errorLocal && <p>{errorLocal}</p>}
+                    <NavLink to="/forgot-password" className="text-decoration-none">Forgot password?</NavLink>
+                    <NavLink to="/signup">Signup here</NavLink>
+                </div>
+            </div>
         </div>
     );
 };

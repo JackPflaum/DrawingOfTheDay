@@ -6,12 +6,12 @@ const Images = ({ imagesList }) => {
             <div className="row">
                 {imagesList ? (
                     imagesList.map((image) => (
-                        <div key={image.id} className="col-md-4 mb-3">
+                        <div key={image.id} className="col-md-4 mb-3 zoom">
                             <img src={image.url} alt={image.id} className="img-fluid" />
                         </div>
                     ))
                 ) : (
-                    <h2>No Images Yet!</h2>
+                    <h2 className="text-center">No Images Yet!</h2>
                 )}
             </div>
         </div>
@@ -20,6 +20,6 @@ const Images = ({ imagesList }) => {
 
 Images.propTypes = {
     imagesList: PropTypes.array,
-}
+};
 
 export default Images;

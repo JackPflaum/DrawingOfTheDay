@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Header from './Header';
 import Images from './Images';
 import UploadModal from './UploadModal';
+import { useOnClickOutside } from '../custom-hooks/useOnClickOutside';
 
 const HomeContent = () => {
     const [ openModal, setOpenModal ] = useState(false);
+    const ref = useRef();
 
     const [ data, setData ] = useState({
         date: new Date().toISOString().split('T')[0],  //set inital date to today
@@ -56,18 +58,27 @@ const HomeContent = () => {
         setOpenModal(false);
     };
 
+    // when the user mouseclicks outside an open modal it calls custom hook to close the modal.
+    useOnClickOutside(ref, openModal, () => setOpenModal(false));
+
     return (
-        <>
+        <div className={openModal ? "container backdrop" : "container"}>
             <Header date={data.date} imagePrompt={data.imagePrompt} />
-            <button onClick={openUploadModal}>Upload Drawing</button>
-            { openModal && <UploadModal isOpen={openModal} closeModal={closeUploadModal} />}
-            <select name="orderOptions" onChange={handleOrderChange}>
-                <option value="-upload_date">Latest</option>
-                <option value="upload_date">Oldest</option>
-            </select>
-            <input type="date" name="date" value={data.date} onChange={handleDateChange} />
+            <div className="d-flex justify-content-between">
+                <button onClick={openUploadModal}>Upload Drawing</button>
+                { openModal && <UploadModal ref={ref} isOpen={openModal} closeModal={closeUploadModal} />}
+
+                <div className="d-inline-flex">
+                    <select name="orderOptions" onChange={handleOrderChange}>
+                        <option value="-upload_date">Latest</option>
+                        <option value="upload_date">Oldest</option>
+                    </select>
+                    <input type="date" name="date" value={data.date} onChange={handleDateChange} />
+                </div>
+
+            </div>
             <Images imagesList={data.imagesList} />
-        </>
+        </div>
     );
 };
 

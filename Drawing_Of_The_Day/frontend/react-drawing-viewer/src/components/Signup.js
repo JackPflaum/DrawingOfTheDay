@@ -1,4 +1,7 @@
+import React, { useState } from 'react';
+import axios from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Signup = () => {
     const [ signupData, setSignupData ] = useState({
@@ -7,6 +10,8 @@ const Signup = () => {
         password1: '',
         password2: '',
     });
+
+    const navigate = useNavigate();
 
     const [ error, setError ] = useState('');
 
@@ -18,7 +23,7 @@ const Signup = () => {
             return;
         };
 
-        if (!signupData.password1 !== signupData.password2 ) {
+        if (!signupData.password1 != signupData.password2 ) {
             setError('Passwords do not match!');
             return;
         };
@@ -27,44 +32,67 @@ const Signup = () => {
             const response = await axios.post('http://localhost:8000/signup', signupData);
 
             const accessToken = response.data.access;
-            localStorage.setItem('accessToken', accessToken);
+            Cookies.set('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/' });
 
-            useNavigate('/');
+            const refreshToken = response.data.refresh;
+            Cookies.set('RefreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/'});
+
+            navigate('/');
         } catch (error) {
-           console.error('Signup failed: ', erorr);
+           console.error('Signup failed: ', error);
         }
     };
 
     return (
         <div className="container">
-            <h3>Signup</h3>
-            <form onSubmit={handleSignupSubmit}>
-                <label>Email:</label>
-                <input
-                    type="text"
-                    value={signupData.email}
-                    name="email"
-                    onChange={(e) => setSignupData({...signupData, email: e.target.value})} />
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={signupData.username}
-                    name="username"
-                    onChange={(e) => setSignupData({...signupData, username: e.target.value})} />
-                <label>Password:</label>
-                <input
-                    type="text"
-                    value={signupData.password1}
-                    name="password1"
-                    onChange={(e) => setSignupData({...signupData, password1: e.target.value})} />
-                <label>Password:</label>
-                <input
-                    type="text"
-                    value={signupData.password2}
-                    name="password2"
-                    onChange={(e) => setSignupData({...signupData, password2: e.target.value})} />
-                <button type="submit">Signup</button>
-            </form>
+            <div className="row align-items-center justify-content-center">
+                <div className="col-lg-6">
+                    <h3 className="text-center">Signup</h3>
+                    <form onSubmit={handleSignupSubmit}>
+                        <div className="form-group">
+                            <label className="form-label">Email:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={signupData.email}
+                                name="email"
+                                placeholder="Enter your email"
+                                onChange={(e) => setSignupData({...signupData, email: e.target.value})} />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Username:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={signupData.username}
+                                name="username"
+                                placeholder="Enter your username"
+                                onChange={(e) => setSignupData({...signupData, username: e.target.value})} />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Password:</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                value={signupData.password1}
+                                name="password1"
+                                placeholder="Enter your password"
+                                onChange={(e) => setSignupData({...signupData, password1: e.target.value})} />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Confirm Password:</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                value={signupData.password2}
+                                name="password2"
+                                placeholder="Confirm your password"
+                                onChange={(e) => setSignupData({...signupData, password2: e.target.value})} />
+                        </div>
+                        <button type="submit">Signup</button>
+                    </form>
+                </div>
+            </div>
             {error && <p>{error}</p>}
             <NavLink to="/login">Already registered? Login here</NavLink>
         </div>

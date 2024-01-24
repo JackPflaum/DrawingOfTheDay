@@ -42,23 +42,3 @@ def signup(request):
         # invalid data, return error message
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])    # checks if the request contains a valid user authentication token
-def logout(request):
-    """handle user logout"""
-    try :
-        # get JWT refresh token so it can be invalidated and user cannot access areas requiring user login
-        refresh_token = request.refreshToken.get('refreshToken')
-        
-        if not refresh_token:
-            return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # blacklist(i.e. invalidate) the refresh token
-        RefreshToken(refresh_token).blacklist()
-
-        return Response({'success': 'Successfully logged out'}, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        

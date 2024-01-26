@@ -23,3 +23,9 @@ class UserSignupSerializer(serializers.Serializer):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError({'error': 'Passwords do not match.'})
         return data
+    
+
+class UserSerializer(serializers.Serializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']

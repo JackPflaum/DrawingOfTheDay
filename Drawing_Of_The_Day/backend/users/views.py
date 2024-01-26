@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .serializers import UserSignupSerializer
+from .serializers import UserSignupSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 
 @api_view(['GET'])
@@ -14,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 def check_authorization(request):
     """check if the user is authenticated"""
     # if user is authenticated then they will have access to this view and return true value
+    # get user details and return it to frontend
     context = {'user': True }
     return Response(context)
 
@@ -41,4 +44,16 @@ def signup(request):
     else:
         # invalid data, return error message
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainTokenPair(TokenObtainPairView):
+    """customised rest simplejwt token authentication class to return user details along with tokens"""
+    def post(self, request, *args, **kwargs):
+        response = super().post(*args, **kwargs)
+        user = request.user
+
+        # serialize user details and add to response body
+        user_details = UserSerializer(user).data
+        response.data['user'] = user_details
+        return response
     

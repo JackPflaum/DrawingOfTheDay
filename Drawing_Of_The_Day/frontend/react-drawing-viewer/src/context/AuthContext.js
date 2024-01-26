@@ -53,8 +53,9 @@ export const AuthProvider = ({ children }) => {
             const refreshToken = response.data.refresh;
             Cookies.set('refreshToken', refreshToken, {secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
-            // sets user to true for AuthContext and used for ongoing website authentication
-            setUser(true);
+            // extract user data from response and set it to user state
+            const userDetails = response.data.user
+            setUser(userDetails);
 
         } catch (error) {
             // if server side error message set error, otherwise set generic error message

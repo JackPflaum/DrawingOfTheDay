@@ -49,7 +49,7 @@ def signup(request):
 class CustomTokenObtainTokenPair(TokenObtainPairView):
     """customised rest simplejwt token authentication class to return user details along with tokens"""
     def post(self, request, *args, **kwargs):
-        response = super().post(*args, **kwargs)
+        response = super().post(request, *args, **kwargs)
         user = request.user
 
         # serialize user details and add to response body

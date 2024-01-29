@@ -3,17 +3,15 @@ import { useAuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+
 const NavBar = () => {
 
-    const { isAuthorized, setUser } = useAuthContext();  
+    const { user, setUser } = useAuthContext();
 
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const links = [
-        {path: '/', text: 'Home', requiresAuthorization: false},
-        {path: '/login', text: 'Login', requiresAuthorization: false},
-        {path: '/logout', text: 'Logout', requiresAuthorization: true},
-        {path: '/signup', text: 'Signup', requiresAuthorization: false},
+        {path: '/', text: 'Home'},
     ];
 
     const handleLogout = async () => {
@@ -22,14 +20,14 @@ const NavBar = () => {
             const refreshToken = Cookies.get('refreshToken');
 
             // make POST request to log out and blacklist refresh token
-            const response = await axios.post('http://localhost:8000/api/logout/', {refresh: refreshToken});
+            await axios.post('http://localhost:8000/api/logout/', {refresh: refreshToken});
 
             // remove tokens from browser cookie
             Cookies.remove('accessToken', { path: '/' });
             Cookies.remove('refreshToken', { path: '/' });
 
-            // set user authContext to false meaning user is logged out
-            setUser(false);
+            // set user authContext to null meaning user is logged out
+            setUser(null);
             
             // redirect to home page after successful logout
             navigate('/');
@@ -43,6 +41,7 @@ const NavBar = () => {
     };
 
     return (
+        // navbar with authorization links only showing under certain logged in conditions
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
                 <NavLink to="/" className="navbar-brand">
@@ -52,70 +51,46 @@ const NavBar = () => {
                     <ul className="navbar-nav ml-auto">
                         {links.map((link) => {
                             return (
-                            <li key={link.text} className="nav-item">
-                                { link.text === 'Logout' ? 
-                                    (
-                                        <NavLink onClick={handleLogout} className="nav-link btn btn-secondary">{link.text}</NavLink>
-                                    ) : (
-                                        <NavLink to={link.path} className="nav-link">{link.text}</NavLink>
-                                    )
-                                }
-                            </li>
-                            );
-                        })}
+                                <li key={link.text} className="nav-item">
+                                    <NavLink to={link.path} className="nav-link">
+                                        {link.text}
+                                    </NavLink>
+                                </li>
+                            )})
+                        }
+                        { user ? (
+                            // if user is logged in then show logout button and profile link
+                            <>
+                                <li className="nav-item">
+                                    <button onClick={handleLogout} className="nav-link btn btn-secondary">
+                                        Logout
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink to="/profile" className="nav-link">
+                                        Profile
+                                    </NavLink>
+                                </li>
+                            </>
+                        ) : (
+                            // if user is not logged in then show login and signup links
+                            <>
+                                <li className="nav-item">
+                                    <NavLink to="/login" className="nav-link btn btn-primary">
+                                        Login
+                                    </NavLink>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink to="/signup" className="nav-link btn btn-primary">
+                                        Signup
+                                    </NavLink>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </div>
         </nav>
-
-
-        // navbar with authorization links only showing under certain logged in conditions
-        // <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        // <div className="container">
-        //     <NavLink to="/" className="navbar-brand">
-        //         Drawing Of The Day
-        //     </NavLink>
-        //     <div className="collapse navbar-collapse">
-        //         <ul className="navbar-nav ml-auto">
-        //             {links.map((link) => {
-        //                 // Conditionally render links based on authentication status and requiresAuthorization property
-        //                 if (link.requiresAuthorization) {
-        //                     // Display only when logged in
-        //                     if (isAuthorized()) {
-        //                         return (
-        //                             <li key={link.text} className="nav-item">
-        //                                 <NavLink onClick={handleLogout} className="nav-link btn btn-secondary">
-        //                                     {link.text}
-        //                                 </NavLink>
-        //                             </li>
-        //                         );
-        //                     }
-        //                 } else {
-        //                     // Display when not logged in
-        //                     if (!isAuthorized()) {
-        //                         return (
-        //                             <li key={link.text} className="nav-item">
-        //                                 <NavLink to={link.path} className="nav-link">
-        //                                     {link.text}
-        //                                 </NavLink>
-        //                             </li>
-        //                         );
-        //                     }
-        //                     // Display always
-        //                     return (
-        //                         <li key={link.text} className="nav-item">
-        //                             <NavLink to={link.path} className="nav-link">
-        //                                 {link.text}
-        //                             </NavLink>
-        //                         </li>
-        //                     );
-        //                 }
-        //                 return null; // Render nothing if the condition is not met
-        //             })}
-        //         </ul>
-        //     </div>
-        // </div>
-        // </nav>
     );
 };
     

@@ -1,11 +1,7 @@
 // Request interceptor for API calls
-
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 
-
-let axiosNavigate = useNavigate();
 
 const axiosRequestInstance = axios.create({
     baseURL: 'http://localhost:8000',
@@ -25,14 +21,14 @@ axiosRequestInstance.interceptors.request.use(
                 try {
                     // access token has expired, and therefore we will try to refresh it
                     const refreshToken = Cookies.get('refreshToken');
-                    const response = await axios.post('/api/token/refresh', refreshToken);
+                    const response = await axios.post('http://localhost:8000/api/token/refresh', { refresh: refreshToken });
 
                     // get access token from axios response
                     const accessToken = response.data.access;
 
                     // store token in cookie
                     const secureAttribute = process.env.NODE_ENV === 'production';  // true if in production and false if in development
-                    Cookies.set('accessToken', accessToken, {httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/' });
+                    Cookies.set('accessToken', accessToken, {secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
                     // attach new access token to request header
                     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -40,11 +36,13 @@ axiosRequestInstance.interceptors.request.use(
                     // unable to refresh the access token
                     // return to login screen
                     console.error('Error refreshing token: ', error);
-                    axiosNavigate('login');
+
+                    window.location.href = 'login/';
                 }
 
             } else {
                 // access token is still valid and can be attached to request header
+                console.log('access token not expired');
                 config.headers.Authorization = `Bearer ${accessToken}`;
             }
         }

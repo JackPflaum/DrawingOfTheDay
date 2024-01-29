@@ -8,17 +8,17 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from backend.drawings.models import Image
+from backend.drawings.serializers import ImageSerializer
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_authorization(request):
-    """check if the user is authenticated"""
-    # if user is authenticated then they will have access to this view and return true value
-    # get user details and return it to frontend
-    context = {'user': True }
-    return Response(context)
+    """return authenticated users details"""
+    username = request.user.username
+
+    return Response({'username': username})
 
 
 @api_view(['POST'])
@@ -46,14 +46,18 @@ def signup(request):
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomTokenObtainTokenPair(TokenObtainPairView):
-    """customised rest simplejwt token authentication class to return user details along with tokens"""
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    """user profile page for presenting user images that they have uploaded"""
+    try:
+        # get user images, serialize data and return to profile page
         user = request.user
+        user_images = Image.objects.filter(user=user).order_by('-upload_date')
+        image_data = ImageSerializer(user_images, many=True).data if user_images else None
+    except User.DoesNotExist:
+        return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({'error': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # serialize user details and add to response body
-        user_details = UserSerializer(user).data
-        response.data['user'] = user_details
-        return response
-    
+    return Response({'images': image_data})

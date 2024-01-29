@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import axiosResponseInstance from '../api/axiosResponseInstance';
-import axiosRequestInstance from '../api/axiosRequestInstance';
 import Cookies from 'js-cookie';
 
 
@@ -12,26 +11,47 @@ export const AuthProvider = ({ children }) => {
     const [ user, setUser ] = useState(null);
     const [ error, setError ] = useState('')
 
-    // check if the user is authenticated when the component mounts
-    // useEffect(() => {
-    //     const checkAuthenticationStatus = async () => {
-    //         try {
-    //             const response = await axiosRequestInstance.get('http://localhost:8000/api/check-auth/')
-                
-    //             // if the user is authenticated on the backend then response will be true
-    //             if (response.data.user) {
-    //                 setUser(true)
-    //             } else {
-    //                 setUser(false)
-    //             }
-    //         } catch (error) {
-    //             setUser(false);
-    //         }
-    //     };
+    // check if the user is authenticated when the component mounts and set user details
+    useEffect(() => {
+        const checkAuthenticationStatus = async () => {
+            try {
+                // check if user has access token for authentication
+                const accessToken = Cookies.get('accessToken');
+                if (accessToken) {
+                    const response = await axiosResponseInstance.get(
+                        'http://localhost:8000/api/check-auth/',
+                        {headers: {Authorization : `Bearer ${accessToken}`}}
+                        );
 
-    //     // call function to check authentication status
-    //     checkAuthenticationStatus();
-    // }, []);
+                    // set user details from returned data
+                    const username = response.data.username;
+                    setUser(username);
+                    return;
+                }
+
+                // check if user has refresh token for refreshing access token
+                const refreshToken = Cookies.get('refreshToken');
+                console.log('refresh token: ', refreshToken);
+                if (refreshToken) {
+                    const response = await axios.get('http://localhost:8000/api/token/refresh/', {refresh: refreshToken});
+
+                    // set user details from returned data
+                    const username = response.data.username;
+                    setUser(username);
+                    return;
+                }
+
+                // no access or refresh token, therefore the user needs to re-authenticate by logging in
+                setUser(null);
+                
+            } catch (error) {
+                setUser(null);
+            }
+        };
+
+        // call function to check authentication status
+        checkAuthenticationStatus();
+    }, []);
 
 
     const login = async ( loginData ) => {
@@ -53,9 +73,9 @@ export const AuthProvider = ({ children }) => {
             const refreshToken = response.data.refresh;
             Cookies.set('refreshToken', refreshToken, {secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
-            // extract user data from response and set it to user state
-            const userDetails = response.data.user
-            setUser(userDetails);
+            // deconstruct username from loginData and set to user
+            const { username } = loginData;
+            setUser(username);
 
         } catch (error) {
             // if server side error message set error, otherwise set generic error message
@@ -67,11 +87,6 @@ export const AuthProvider = ({ children }) => {
             throw new Error('Login Failed. Please try again.');    
         }
     };
-     
-
-    const isAuthorized = () => {
-        return !!user; // true if the user is authenticated, false otherwise
-    };
 
 
     const clearErrorMessage = () => {
@@ -80,12 +95,12 @@ export const AuthProvider = ({ children }) => {
 
 
     const contextValues = {
-        login,
-        setUser,
-        isAuthorized,
-        clearErrorMessage,
-        error,
-        setError,
+        login: login,
+        user: user,
+        setUser: setUser,
+        clearErrorMessage: clearErrorMessage,
+        error: error,
+        setError: setError,
     };
 
     return (

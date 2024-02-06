@@ -5,11 +5,19 @@ import Images from './Images';
 import UploadModal from './UploadModal';
 import { useOnClickOutside } from '../hooks/customHooks';
 import { format } from 'date-fns';
+import { useAuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const HomeContent = () => {
     // for opening up Upload Image modal
     const [ openModal, setOpenModal ] = useState(false);
     const ref = useRef();
+
+    // for redirecting user
+    const navigate = useNavigate();
+
+    const { user } = useAuthContext();
 
     // set intial date to today and use date-fns format function to format the date
     const currentDate = new Date();
@@ -30,8 +38,11 @@ const HomeContent = () => {
             const [ day, month, year ] = date.split('-');
             const formattedDateForBackend = format(new Date(`${year}-${month}-${day}`), 'yyyy-MM-dd');
 
+            console.log('Home Component Fetching data');
             // 'await' keyword pauses the execution of the function until axios.get promise is resolved.
             const response = await axios.get(`http://localhost:8000/home/?date=${formattedDateForBackend}&order_option=${orderOption}`);
+
+            console.log('Home Component data returned properly');
 
             // convert returned date to 'dd-MM-yyyy'
             const returnedDate = response.data.date;
@@ -83,7 +94,12 @@ const HomeContent = () => {
     };
 
     const openUploadModal = () => {
-        setOpenModal(true);
+        // redirect user to login page if user is not logged in
+        if (user) {
+            setOpenModal(true);
+        } else {
+            navigate('/login');
+        }
     };
 
     const closeUploadModal = () => {
@@ -95,7 +111,11 @@ const HomeContent = () => {
 
     return (
         <div className={openModal ? "container backdrop" : "container"}>
-            <Header date={data.date} imagePrompt={data.imagePrompt} />
+            { data.date && data.imagePrompt ? (
+                <Header date={data.date} imagePrompt={data.imagePrompt} />
+            ) : (
+                <p className="text-center mt-5">Loading...</p>
+            )}
             <div className="d-flex justify-content-between">
                 <button className="btn btn-primary" onClick={openUploadModal}>Upload Drawing</button>
                 { openModal && <UploadModal ref={ref} isOpen={openModal} closeModal={closeUploadModal} />}
@@ -109,7 +129,11 @@ const HomeContent = () => {
                 </div>
 
             </div>
-            <Images imagesList={data.imagesList} />
+            { data.imagesList.length > 0 ? (
+                <Images imagesList={data.imagesList} />
+            ) : (
+                <h3 className="text-center">No drawings have been submitted.</h3>
+            )}
         </div>
     );
 };

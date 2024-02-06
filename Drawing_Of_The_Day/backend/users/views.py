@@ -15,10 +15,11 @@ from backend.drawings.serializers import ImageSerializer
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_authorization(request):
-    """return authenticated users details"""
-    username = request.user.username
-
-    return Response({'username': username})
+    """check if the user is authenticated"""
+    # if user is authenticated then they will have access to this view and return true value
+    # get user details and return it to frontend
+    context = {'user': True }
+    return Response(context)
 
 
 @api_view(['POST'])

@@ -34,10 +34,8 @@ axiosRequestInstance.interceptors.request.use(
                     config.headers.Authorization = `Bearer ${accessToken}`;
                 } catch (error) {
                     // unable to refresh the access token
-                    // return to login screen
-                    console.error('Error refreshing token: ', error);
-
-                    window.location.href = 'login/';
+                    console.error('Error refreshing token:', refreshError);
+                    throw {status: 401, message: 'Unable to refresh access token'};
                 }
 
             } else {

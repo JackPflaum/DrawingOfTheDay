@@ -48,8 +48,9 @@ axiosResponseInstance.interceptors.response.use(
                 // retry original request with new access token
                 return axiosResponseInstance(originalRequest);
             } catch (refreshError) {
+                // unable to refresh the access token
                 console.error('Error refreshing token:', refreshError);
-                window.location.href = 'login/';
+                throw {status: 401, message: 'Unable to refresh access token'};
             }
         }
     // propagates error downstream so error can be handled in other parts of the application

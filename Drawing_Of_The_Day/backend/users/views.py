@@ -70,7 +70,7 @@ def delete_image(request):
     """allow users to delete their own image"""
     try:
         user = request.user
-        image_id = request.GET.get('imageId')
+        image_id = request.data.get('imageId')
         image = Image.objects.get(user=user, id=image_id)    
 
         image.delete()

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import axiosResponseInstance from '../api/axiosResponseInstance';
+import axiosRequestInstance from '../api/axiosRequestInstance';
 import Cookies from 'js-cookie';
 
 
@@ -15,36 +15,21 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuthenticationStatus = async () => {
             try {
-                // check if user has access token for authentication
+                // check if user has valid access token for authentication
                 const accessToken = Cookies.get('accessToken');
-                if (accessToken) {
-                    const response = await axiosResponseInstance.get(
-                        'http://localhost:8000/api/check-auth/',
-                        {headers: {Authorization : `Bearer ${accessToken}`}}
-                        );
+                const response = await axiosRequestInstance.get('http://localhost:8000/api/check-auth/', 
+                    {headers: {Authorization: `Bearer ${accessToken}`}});
 
-                    // set user details from returned data
-                    const username = response.data.username;
-                    setUser(username);
-                    return;
-                }
-
-                // check if user has refresh token for refreshing access token
-                const refreshToken = Cookies.get('refreshToken');
-                console.log('refresh token: ', refreshToken);
-                if (refreshToken) {
-                    const response = await axios.get('http://localhost:8000/api/token/refresh/', {refresh: refreshToken});
-
-                    // set user details from returned data
-                    const username = response.data.username;
-                    setUser(username);
-                    return;
-                }
-
-                // no access or refresh token, therefore the user needs to re-authenticate by logging in
-                setUser(null);
+                // set user details from returned data
+                const username = response.data.username;
+                setUser(username);
                 
             } catch (error) {
+                if (error.response && error.response.status === 401) {
+                    console.log('Unable to refresh access token');
+                }
+                console.log('Error: ', error);
+                // access and refresh token not valid, therefore the user needs to re-authenticate by logging in
                 setUser(null);
             }
         };

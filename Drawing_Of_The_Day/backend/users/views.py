@@ -62,3 +62,21 @@ def profile(request):
         return Response({'error': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response({'images': image_data})
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_image(request):
+    """allow users to delete their own image"""
+    try:
+        user = request.user
+        image_id = request.GET.get('imageId')
+        image = Image.objects.get(user=user, id=image_id)    
+
+        image.delete()
+
+        return Response({'success': 'Drawing has been successfully deleted.'}, status=status.HTTP_200_OK)
+    except Image.DoesNotExist:
+        return Response({'error': 'Drawing not found or you do not have permission to delete this drawing'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({'error': f'Something went wrong: {str(error)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

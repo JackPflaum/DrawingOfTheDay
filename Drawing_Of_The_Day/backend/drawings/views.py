@@ -23,9 +23,6 @@ def home(request):
     # '__date' only filters the images based on date and not date and time.
     images = Image.objects.filter(upload_date__date=date_str).order_by(order_option)
     images_data = ImageSerializer(images, many=True).data
-    print('images data:', images_data)
-
-    # get likes and dislikes count from Like model count function?
 
     # get image prompt object for particular date and extract prompt_text
     image_prompt = ImagePrompt.objects.filter(date=date_str).first()
@@ -52,15 +49,9 @@ def upload_image(request):
         start_of_day = timezone.make_aware(timezone.datetime(current_date.year, current_date.month, current_date.day))
         end_of_day = timezone.make_aware(timezone.datetime(current_date.year, current_date.month, current_date.day, 23, 59, 59, 999999))
 
-        print("start of day: ", start_of_day)
-        print("end of day: ", end_of_day)
         # checking date with __range because upload_date is DateTimeField and we need to take into account date and time.
         already_uploaded = Image.objects.filter(user=user, upload_date__range=(start_of_day, end_of_day)).exists()
 
-
-        # already_uploaded = Image.objects.filter(user=user, 
-        #     upload_date__range=(datetime.datetime.combine(start_date, datetime.time.min), datetime.datetime.combine(end_date, datetime.time.max),)).exists()
-        print("Already Uploaded:", already_uploaded)
         if already_uploaded:
             return Response({'error': 'Sorry, you can only submit one drawing per day.'}, status=status.HTTP_409_CONFLICT)
 
@@ -72,7 +63,8 @@ def upload_image(request):
             raise ValidationError('Image size exceeds the allowable limit of 5MB')
 
         # get image text prompt using current date
-        image_prompt = ImagePrompt.objects.get(date=date)
+        # cannot submit for previous days
+        image_prompt = ImagePrompt.objects.get(date=current_date)
         
         # save image file to Image model
         Image.objects.create(image_prompt=image_prompt, user=request.user, image=image)
@@ -85,7 +77,6 @@ def upload_image(request):
     except ValidationError as validation_error:
         return Response({'error': str(validation_error)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as error:
-        print(f'error loading image: {error}')
         return Response({'error': 'Image was not uploaded due to internal server error:',}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -111,13 +102,10 @@ def image_likes(request):
 @permission_classes([IsAuthenticated])
 def like_dislike(request):
     """save users like or dislike response to an image"""
-    print('made it to like_dislike view')
     try:
         user = request.user
         like_status = request.data.get('likeStatus')
         image_id = request.data.get('imageId')
-
-        print('like_status ', like_status)
 
         # get image that is being liked or disliked.
         image = Image.objects.get(id=image_id)

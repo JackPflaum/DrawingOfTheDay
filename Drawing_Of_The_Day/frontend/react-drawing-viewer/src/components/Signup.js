@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { axiosResponseInstance } from '../api/axiosResponseInstance';
+import axios from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
@@ -13,18 +13,18 @@ const Signup = () => {
 
     let navigate = useNavigate();
 
-    const [ error, setError ] = useState('');
+    const [ localError, setLocalError ] = useState('');
 
     const handleSignupSubmit = async (e) => {
         e.preventDefault();
 
         if (!signupData.email || !signupData.username || !signupData.password2 || !signupData.password2) {
-            setError('All fields are required!');
+            setLocalError('All fields are required!');
             return;
         };
 
-        if (!signupData.password1 != signupData.password2 ) {
-            setError('Passwords do not match!');
+        if (signupData.password1 !== signupData.password2 ) {
+            setLocalError('Passwords do not match!');
             return;
         };
 
@@ -32,7 +32,7 @@ const Signup = () => {
             // true if in production and false if in development
             const secureAttribute = process.env.NODE_ENV === 'production';
 
-            const response = await axiosResponseInstance.post('http://localhost:8000/signup', signupData);
+            const response = await axios.post('http://localhost:8000/api/signup/', { signupData });
 
             const accessToken = response.data.access;
             Cookies.set('accessToken', accessToken, { httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/' });
@@ -42,7 +42,12 @@ const Signup = () => {
 
             navigate('/');
         } catch (error) {
-           console.error('Signup failed: ', error);
+            if (error && error.response.status === 400) {
+                setLocalError(error.response.data.error);
+            } else if (error && error.response.status === 500) {
+                console.error('Signup failed: ', error);
+                setLocalError(error);
+            }
         }
     };
 
@@ -56,7 +61,7 @@ const Signup = () => {
                             <label className="form-label">Email:</label>
                             <input
                                 type="text"
-                                className="form-control"
+                                className="form-control custom-input"
                                 value={signupData.email}
                                 name="email"
                                 placeholder="Enter your email"
@@ -66,7 +71,7 @@ const Signup = () => {
                             <label className="form-label">Username:</label>
                             <input
                                 type="text"
-                                className="form-control"
+                                className="form-control custom-input"
                                 value={signupData.username}
                                 name="username"
                                 placeholder="Enter your username"
@@ -76,7 +81,7 @@ const Signup = () => {
                             <label className="form-label">Password:</label>
                             <input
                                 type="password"
-                                className="form-control"
+                                className="form-control custom-input"
                                 value={signupData.password1}
                                 name="password1"
                                 placeholder="Enter your password"
@@ -86,18 +91,18 @@ const Signup = () => {
                             <label className="form-label">Confirm Password:</label>
                             <input
                                 type="password"
-                                className="form-control"
+                                className="form-control custom-input"
                                 value={signupData.password2}
                                 name="password2"
                                 placeholder="Confirm your password"
                                 onChange={(e) => setSignupData({...signupData, password2: e.target.value})} />
                         </div>
-                        <button type="submit">Signup</button>
+                        {localError && <p className="error-message">{localError}</p>}
+                        <button type="submit" className="btn btn-primary mt-2">Signup</button>
                     </form>
+                    <NavLink to="/login">Already registered? Login here</NavLink>
                 </div>
-            </div>
-            {error && <p>{error}</p>}
-            <NavLink to="/login">Already registered? Login here</NavLink>
+            </div>           
         </div>
     );
 };

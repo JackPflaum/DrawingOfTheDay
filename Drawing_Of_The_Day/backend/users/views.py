@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from .serializers import UserSignupSerializer, UserSerializer
+from django.core.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.hashers import make_password
@@ -16,9 +17,10 @@ from backend.drawings.serializers import ImageSerializer
 @permission_classes([IsAuthenticated])
 def check_authorization(request):
     """check if the user is authenticated"""
-    # if user is authenticated then they will have access to this view and return true value
+    # if user is authenticated then they will have access to this view and return username
     # get user details and return it to frontend
-    context = {'user': True }
+    username = request.user.username
+    context = {'username': username }
     return Response(context)
 
 
@@ -26,25 +28,32 @@ def check_authorization(request):
 @permission_classes([AllowAny])    # allows permission for anyone to access this view
 def signup(request):
     """handling user signup and authorising user"""
+    try:    
+        # get signup data from frontend
+        signup_data = request.data.get('signupData')
 
-    # get serialized user signup data
-    serializer = UserSignupSerializer(data=request.signupData)
+        # get serialized user signup data
+        serializer = UserSignupSerializer(data=signup_data)
 
-    # validate data
-    if serializer.is_valid():
-        # data valid,therefore create new user
-        user = User.objects.create_user(username=serializer.validated_data['username'],
-            email=serializer.validated_data['email'], 
-            password=make_password(serializer.validated_data['password1']))    # 'make_password()' hashes password for encrypted storage
+        # validate data
+        if serializer.is_valid(raise_exception=True):
+            # data valid, therefore create new user
+            user = User.objects.create_user(username=serializer.validated_data['username'],
+                email=serializer.validated_data['email'], 
+                password=serializer.validated_data['password1'])
 
-        # generate an access token for client-side authentication
-        access_token = RefreshToken.for_user(user).access_token
-        refresh_token = RefreshToken.for_user(user)
+            # generate an access token for client-side authentication
+            access_token = RefreshToken.for_user(user).access_token
+            refresh_token = RefreshToken.for_user(user)
 
-        return Response({'access': str(access_token), 'refresh': str(refresh_token)}, status=status.HTTP_201_CREATED)
-    else:
-        # invalid data, return error message
-        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'access': str(access_token), 'refresh': str(refresh_token)}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except serializers.ValidationError as validation_error:
+        return Response({'error': str(validation_error)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as error:
+        return Response({'error': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])

@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
                 // set user details from returned data
                 const username = response.data.username;
-                setUser(username);
+                setUser({username: username});
                 
             } catch (error) {
                 if (error.response && error.response.status === 401) {
@@ -67,6 +67,8 @@ export const AuthProvider = ({ children }) => {
             if (error.response && error.response.status === 400) {
                 setError('User not found. Please check your credentials.');
             } else {
+                console.log(error);
+                console.log(error.response);
                 setError('Login Failed. Please try again.');   
             }
             throw new Error('Login Failed. Please try again.');    

@@ -29,7 +29,7 @@ def home(request):
     image_prompt_data = image_prompt.prompt_text if image_prompt else None
 
     context = {'date': date_str,
-               'imagePrompt': image_prompt_data if image_prompt_data else 'Sorry, No Image Prompt Today.',
+               'imagePrompt': image_prompt_data if image_prompt_data else 'Sorry, No Drawing Prompt Today.',
                'imagesList': images_data,
                'orderOption': order_option,
                }
@@ -81,22 +81,75 @@ def upload_image(request):
 
 
 @api_view(['GET'])
-def image_likes(request):
-    """get image likes and dislikes count. If user is logged in and has already liked or dislikes someones image
-    then send back true"""
-    image_likes = []
+def image_likes_no_auth(request):
+    """get image likes and dislikes count. No user authorization required."""
+    image_likes_dislikes_count = []
 
     # retrieve image ids from request paramaters
-    image_ids = request.GET.getlist('image_ids')
+    # some frameworks automatically add '[]' to paramater name ('image_ids')to signify that an array is being sent in URL
+    image_ids = request.GET.getlist('image_ids', []) or request.GET.getlist('image_ids[]')
+    print('Request GET: ', request.GET)
+    print('image_ids: ', image_ids)
 
     # append likes data to image ids
     for image_id in image_ids:
-        image = Image.objects.filter(id=id).first()
-        like_dislike_count = LikeSerializer(image, context={'request': request}).data
-        image_likes.append({image_id: like_dislike_count})
+        image = Image.objects.filter(id=image_id).first()
+        like_dislike_count = LikeSerializer(image).data
+        image_likes_dislikes_count.append({image_id: like_dislike_count})
 
-    return Response(image_likes, status=status.HTTP_200_OK)
+    print('Image likes and dislikes count: ', image_likes_dislikes_count)
+    return Response(image_likes_dislikes_count, status=status.HTTP_200_OK)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def image_likes_auth(request):
+    """get image likes and dislikes count. If user is logged in and has already liked or dislikes someones image
+    then send back like_status"""
+    count_list = []
+    like_status_list = []
+
+    # retrieve image ids from request paramaters
+    # some frameworks automatically add '[]' to paramater name ('image_ids')to signify that an array is being sent in URL
+    image_ids = request.GET.getlist('image_ids',[]) or request.GET.getlist('image_ids[]')
+    print('Request GET: ', request.GET)
+    print('image_ids: ', image_ids)
+
+    for image_id in image_ids:
+        image = Image.objects.filter(id=image_id).first()
+
+        # append likes and dislikes count
+        like_dislike_count = LikeSerializer(image).data
+        count_list.append({image_id: like_dislike_count})
+
+        # append any of the users previous likes or dislikes to image ids
+        liked = Like.objects.filter(user=request.user, image=image).first()
+        if liked:
+            like_status_list.append({image_id: liked.like_status})
+        else:
+            like_status_list.append({image_id: None})
+
+    print('Count List: ', count_list)
+    print('Like status List: ', like_status_list)
+    return Response({'likesDislikesCount': count_list, 'likeStatusList': like_status_list}, status=status.HTTP_200_OK)
+
+
+
+def get_likes_dislikes_count(image_id):
+    """get the number of user likes and dislikes for single image"""
+    try:
+        image_likes_dislikes_count = []
+
+        # get image and use serialiazer to get number of likes and dislikes
+        image = Image.objects.get(id=image_id)
+        like_dislike_count = LikeSerializer(image).data
+        image_likes_dislikes_count.append(like_dislike_count)
+
+        return image_likes_dislikes_count
+    except Exception as error:
+        print(f'Error in getting likes and dislikes count: {error}')
+        return [{'likes': 0, 'dislikes': 0}]
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -117,15 +170,20 @@ def like_dislike(request):
             # null means user is taking away their previous like or dislike response.
             if like_status is None:
                 like.delete()
-                return Response({'success': 'Like status deleted successfully'}, status=status.HTTP_200_OK)
+                image_likes_dislikes_count = get_likes_dislikes_count(image_id)    # gets updated count
+                return Response({'success': 'Like status deleted successfully', 'likesDislikesCount': image_likes_dislikes_count}, status=status.HTTP_200_OK)
             else:
                 like.like_status = like_status
                 like.save()
-                return Response({'success': 'Like status successfully submitted'}, status=status.HTTP_201_CREATED)
+                image_likes_dislikes_count = get_likes_dislikes_count(image_id)    # gets updated count
+                return Response({'success': 'Like status successfully submitted', 'likesDislikesCount': image_likes_dislikes_count},
+                    status=status.HTTP_201_CREATED)
 
         # if user has not liked or disliked image before then save like_status to Like model.
         Like.objects.create(user=user, image=image, like_status=like_status)
-        return Response({'success': 'Like status successfully submitted'}, status=status.HTTP_201_CREATED)
+        image_likes_dislikes_count = get_likes_dislikes_count(image_id)    # gets updated count
+        return Response({'success': 'Like status successfully submitted', 'likesDislikesCount': image_likes_dislikes_count},
+            status=status.HTTP_201_CREATED)
 
     except PermissionDenied:
         return Response({'error': 'Unauthorized access'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -134,4 +192,3 @@ def like_dislike(request):
     except Exception as error:
         print(f'Error: {error}')
         return Response({'error': 'Like or dislike response was not submitted due to internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-

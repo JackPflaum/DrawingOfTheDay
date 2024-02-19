@@ -21,7 +21,7 @@ axiosRequestInstance.interceptors.request.use(
                 try {
                     // access token has expired, and therefore we will try to refresh it
                     const refreshToken = Cookies.get('refreshToken');
-                    const response = await axios.post('http://localhost:8000/api/token/refresh', { refresh: refreshToken });
+                    const response = await axios.post('http://localhost:8000/api/token/refresh/', { refresh: refreshToken });
 
                     // get access token from axios response
                     const accessToken = response.data.access;
@@ -32,7 +32,7 @@ axiosRequestInstance.interceptors.request.use(
 
                     // attach new access token to request header
                     config.headers.Authorization = `Bearer ${accessToken}`;
-                } catch (error) {
+                } catch (refreshError) {
                     // unable to refresh the access token
                     console.error('Error refreshing token:', refreshError);
                     throw {status: 401, message: 'Unable to refresh access token'};
@@ -44,7 +44,7 @@ axiosRequestInstance.interceptors.request.use(
                 config.headers.Authorization = `Bearer ${accessToken}`;
             }
         }
-    return config;
+        return config;
     },
     // callback error is triggered if config has errors
     (error) => {

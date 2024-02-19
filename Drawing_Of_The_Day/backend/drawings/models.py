@@ -7,7 +7,7 @@ class ImagePrompt(models.Model):
     prompt_text = models.TextField()
 
     def __str__(self):
-        return f'Image Prompt: {self.date}'
+        return f'Image Prompt: {self.prompt_text} ({self.date})'
 
 
 class Image(models.Model):
@@ -17,9 +17,9 @@ class Image(models.Model):
     upload_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user} uploaded image on {self.upload_date}'
+        return f'Image by {self.user} on {self.upload_date}'
     
-    def count_likes(self):
+    def count_likes_dislikes(self):
         """counts the likes and dislikes based on reverse relationship with Like model"""
         # 'like_set' is the default reverse relationship name
         # accessing the 'like_status' field in the 'Like' model using relationship name

@@ -10,44 +10,61 @@ import { HiOutlineThumbDown, HiOutlineThumbUp, HiThumbDown, HiThumbUp } from "re
 
 
 const Images = ({ imagesList }) => {
-
+    // imageState holds image and like and dislikes data
     const [ imagesState, setImagesState ] = useState([]);
-    const { user } = useAuthContext();
     const accessToken = Cookies.get('accessToken');
     const [localError, setLocalError] = useState('');
 
+    // user holds authorized user data
+    const { user } = useAuthContext();
+
+
+    // like and dislike data for each image is fetched from django backend and added to images
     const fetchImageLikes = async (imagesList) => {
-        console.log('Image Component Image List: ', imagesList);
         if (imagesList && imagesList.length > 0) {
             try {
+                // get list of image ids and pass as paramater in backend request
                 const imageIds = imagesList.map((image) => image.id);
 
-                // if user logged in then use axiosRequestInstance to check access token expiry and retrieve previous likes and dislike responces
+                // if user logged in then use axiosRequestInstance to check access token expiry and retrieve previous likes and dislike responses
                 if (user) {
                     // get like and dislike data for each image in imageList
-                    const response = await axiosRequestInstance.get('http://localhost:8000/image-likes/',
-                        { params: { image_ids: imageIds } },
-                        {headers: {Authorization: `Bearer ${accessToken}`}});
+                    const response = await axiosRequestInstance.get('http://localhost:8000/image-likes-auth/',
+                        { params: { image_ids: imageIds } });
 
+                    const likesDislikesCountData = response.data.likesDislikesCount;
+                    const likeStatusList = response.data.likeStatusList;
+
+                    // map accross each image in imageList and add response data to it.
                     const newImagesState = imagesList.map((image) => {
-                        const likesDislikes = response.data.find((item) => item[image.id]);
-                        return {...image, 
-                            likesDislikes: likesDislikes ? likesDislikes.likes_dislikes_count : {likes: 0, dislikes: 0},
-                            like: null};
-                    });
+                        // get number of likes and dislikes for image.
+                        const countData = likesDislikesCountData.find((item) => item[image.id]);
 
+                        // get likeStatus: if user has liked(true), disliked(false) or null for hasn't rated yet.
+                        const likeStatus = likeStatusList.find((item) => image.id in item);
+
+                        return {...image, 
+                            likesCount: countData[image.id].likes_dislikes_count.likes,
+                            dislikesCount: countData[image.id].likes_dislikes_count.dislikes,
+                            like: likeStatus ? likeStatus[image.id] : null,
+                        }
+                    });
+                    // set ImageState with number of likes/dislikes count and previous liked/disliked 
                     setImagesState(newImagesState);
                 } else {
                     // if user not authorized then normal axios get request
-                    const response = await axios.get('http://localhost:8000/image-likes/', { params: { image_ids: imageIds } });
+                    const response = await axios.get('http://localhost:8000/image-likes-no-auth/',
+                        { params: { image_ids: imageIds } });
+
+                    // map accross each image in imageList and add response data to it.
                     const newImagesState = imagesList.map((image) => {
-                        const likesDislikes = response.data.find((item) => item[image.id]);
+                        const likesData = response.data.find((item) => item[image.id]);
                         return {...image,
-                            likesDislikes: likesDislikes ? likesDislikes.likes_dislikes_count : {likes: 0, dislikes: 0},
+                            likesCount: likesData[image.id].likes_dislikes_count.likes,
+                            dislikesCount: likesData[image.id].likes_dislikes_count.dislikes,
                             like: null};
                     });
-
-                    console.log('NewImagesState: ', newImagesState);
+                    // set ImageState with number of likes and dislikes
                     setImagesState(newImagesState);
                 }
 
@@ -62,6 +79,7 @@ const Images = ({ imagesList }) => {
 
     };
 
+
     useEffect(() => {
         const fetchData = async () => {
             await fetchImageLikes(imagesList);
@@ -71,19 +89,50 @@ const Images = ({ imagesList }) => {
     }, [imagesList]);
 
 
+    // render likes and dislikes buttons depending on what user has selected.
+    const LikeDislikeButton = ({ image, handleLikeDislike }) => (
+        <div>
+            { image.like === true && (
+                <>
+                    <HiThumbUp onClick={() => handleLikeDislike(image.id, null)} /> {image.likesCount}
+                    <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.dislikesCount}
+                </>
+            )}
+            { image.like === false && (
+                <>
+                    <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesCount}
+                    <HiThumbDown onClick={() => handleLikeDislike(image.id, null)} /> {image.dislikesCount}
+                </>
+             )}
+             { image.like === null && (
+                 <>
+                     <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesCount}
+                     <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.dislikesCount}
+                 </>
+             )}
+        </div>
+    );
+
+
     const handleLikeDislike = async (imageId, likeStatus) => {
+        // function for handling users rating of image.
+        // user can only submit rating if logged in.
         if (user) {
             try {
-                console.log('handleLikeDislike: start of function.', imageId);
-
+                // submit rating to backend for updating database
                 const response = await axiosRequestInstance.post('http://localhost:8000/like-dislike/', {imageId, likeStatus});
-                    
+                
+                // update image like data returned in backend response.
                 setImagesState((prevImagesState) => {
                     const newImagesState = prevImagesState.map((image) => {
                         if (image.id === imageId) {
+                            const likesDislikesCount = response.data.likesDislikesCount;
+
+                            // update like/dislike count and new like status
                             return {
                                 ...image,
-                                likesDislikes: response.data,
+                                likesCount: likesDislikesCount[0].likes_dislikes_count.likes || 0,
+                                dislikesCount: likesDislikesCount[0].likes_dislikes_count.dislikes || 0,
                                 like: likeStatus,
                             };
                         } else {
@@ -96,8 +145,13 @@ const Images = ({ imagesList }) => {
                 console.log('Error: ', error);
             }
         } else {
-            // need to set timer which resets error message to '' after 3 seconds.
             setLocalError('Log in to like or dislike');
+
+            // error message disappears after 3 seconds.
+            setTimeout(() => {
+                setLocalError('');
+            }, 3000);
+
             return;
         }
     };
@@ -106,7 +160,7 @@ const Images = ({ imagesList }) => {
     const handleDelete = async (imageId) => {
         // delete image if user is logged in.
         try {
-            const response = await axiosRequestInstance.delete('http://localhost:8000/api/delete-image/', {data: {imageId}} );
+            await axiosRequestInstance.delete('http://localhost:8000/api/delete-image/', {data: {imageId}} );
         } catch (error) {
             console.log('Delete Image Error: ', error);
             setLocalError(`Error: ${error}`);
@@ -117,35 +171,20 @@ const Images = ({ imagesList }) => {
 
     return (
         <div className="container">
-            <div className="row mt-3">
+            <div className="row d-flex justify-content-center mt-3">
                 {imagesState.length > 0 ? (
                     imagesState.map((image) => (
-                        <div key={image.id} className="card col-md-4 mb-3 zoom">
-                            <img src={`http://localhost:8000/${image.url}`} alt={image.id} className="card-img-top img-fluid" />
+                        <div key={image.id} className="card col-md-3 mb-3 me-4">
+                            <img src={`http://localhost:8000/${image.url}`} alt={image.id} className=" img-fluid" />
                             <div className="card-body">
                                 <NavLink to="" className="card-text">{image.username}</NavLink>
-                                <div>
-                                    { image.like ? (
-                                        <>
-                                            <HiThumbUp onClick={() => handleLikeDislike(image.id, null)} /> {image.likesDislikes.likes}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesDislikes.likes}
-                                        </>
-                                    )}
-                                    { image.dislike ? (
-                                        <>
-                                            <HiThumbDown onClick={() => handleLikeDislike(image.id, null)} /> {image.likesDislikes.dislikes}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.likesDislikes.dislikes}
-                                        </>
-                                    )}
-                                </div>
+                                <LikeDislikeButton image={image} handleLikeDislike={handleLikeDislike} />
                                 {localError && <p className="error-message">{localError}</p>}
-                                { user && <button className="btn btn-danger" onClick={() => handleDelete(image.id)}>Delete</button>}
+
+                                {/*image delete button only available in UserProfile component for the owner of the profile*/}
+                                { user && user.username === image.username && (
+                                    <button className="btn btn-danger" onClick={() => handleDelete(image.id)}>Delete</button>
+                                )}
                             </div>
                         </div>
                     ))

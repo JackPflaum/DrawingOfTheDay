@@ -3,6 +3,7 @@ import axios from 'axios'
 import Header from './Header';
 import Images from './Images';
 import UploadModal from './UploadModal';
+import MessageModal from './MessageModal';
 import { useOnClickOutside } from '../hooks/customHooks';
 import { format } from 'date-fns';
 import { useAuthContext } from '../context/AuthContext';
@@ -12,6 +13,9 @@ import { useNavigate } from 'react-router-dom';
 const HomeContent = () => {
     // for opening up Upload Image modal
     const [ openModal, setOpenModal ] = useState(false);
+
+    // for opening up Message Modal
+    const [ openMessageModal, setOpenMessageModal ] = useState(false);
     const ref = useRef();
 
     // for redirecting user
@@ -117,8 +121,15 @@ const HomeContent = () => {
                 <p className="text-center mt-5">Loading...</p>
             )}
             <div className="d-flex justify-content-between">
-                <button className="btn btn-primary" onClick={openUploadModal}>Upload Drawing</button>
+                { data.date === formattedDate ? (
+                    <button className="btn btn-primary" onClick={openUploadModal}>Upload Drawing</button>
+                ) : (
+                    <button className="btn btn-primary" onClick={() => setOpenMessageModal(true)}>Upload Drawing</button>
+                )}
                 { openModal && <UploadModal ref={ref} isOpen={openModal} closeModal={closeUploadModal} />}
+
+                {/* Message Modal: for when users try upload on a date other than today */}
+                { openMessageModal && <MessageModal ref={ref} isOpen={openMessageModal} closeModal={() => setOpenMessageModal(false)} />}
 
                 <div className="d-flex">
                     <select name="orderOptions" className="me-2" onChange={handleOrderChange}>

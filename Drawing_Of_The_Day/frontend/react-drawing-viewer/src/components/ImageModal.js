@@ -1,13 +1,13 @@
 import '../css/ImageModal.css';
 
-const ImageModal = ({isOpen, closeModal, ref, imageUrl, username, imagePrompt}) => {
+const ImageModal = ({isOpen, closeModal, ref, imageUrl, username, imagePrompt, date}) => {
 
     return (
         <div>
         { isOpen && <div className="modal-backdrop"></div>}
         <div ref={ref} className="modal-content">
             <div className="d-flex justify-content-between">
-                <h3>{imagePrompt}</h3>
+                <h3>{date}: {imagePrompt}</h3>
                 <span onClick={closeModal}>&times;</span>
             </div>
             <img src={`http://localhost:8000/${imageUrl}`} ></img>

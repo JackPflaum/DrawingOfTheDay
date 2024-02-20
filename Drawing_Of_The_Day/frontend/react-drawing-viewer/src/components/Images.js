@@ -195,7 +195,8 @@ const Images = ({ imagesList }) => {
                                 closeModal={() => toggleImageModal(image.id)}
                                 imageUrl={image.url}
                                 username={image.username}
-                                imagePrompt={image.prompt}/>)}
+                                imagePrompt={image.prompt}
+                                date={image.prompt_date} />)}
 
                             <div className="card-body">
                                 <NavLink to="" className="card-text">{image.username}</NavLink>

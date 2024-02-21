@@ -8,10 +8,11 @@ class ImageSerializer(serializers.ModelSerializer):
     prompt = serializers.SerializerMethodField()
     prompt_date = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Image
-        fields = ['id', 'user', 'url', 'prompt', 'prompt_date', 'username']
+        fields = ['id', 'url', 'prompt', 'prompt_date', 'username', 'user_id']
 
     def get_url(self, obj):
         return obj.image.url if obj.image else None
@@ -27,6 +28,10 @@ class ImageSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         """get username from foreignkey connection with User model"""
         return obj.user.username if obj.user else None
+    
+    def get_user_id(self, obj):
+        """get user id from foreignkey connection with User model"""
+        return obj.user.id if obj.user else None
 
 
 class LikeSerializer(serializers.ModelSerializer):

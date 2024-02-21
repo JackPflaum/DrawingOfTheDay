@@ -2,6 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { IoIosLogIn, IoIosLogOut } from 'react-icons/io';
+import { IoPersonAddOutline, IoPersonOutline } from "react-icons/io5";
 
 
 const NavBar = () => {
@@ -45,13 +47,18 @@ const NavBar = () => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
                 <NavLink to="/" className="navbar-brand">
+                    <img src="paint_brush_logo.png" width="40" height="40" className="d-inline-block rounded-circle me-2" alt="logo"></img>
                     Drawing Of The Day
                 </NavLink>
-                <div className="collapse navbar-collapse">
+
+                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse justify-content-end" id="navbarToggler">
                     <ul className="navbar-nav ml-auto">
                         {links.map((link) => {
                             return (
-                                <li key={link.text} className="nav-item">
+                                <li key={link.text} className="nav-item me-1">
                                     <NavLink to={link.path} className="nav-link">
                                         {link.text}
                                     </NavLink>
@@ -62,12 +69,14 @@ const NavBar = () => {
                             // if user is logged in then show logout button and profile link
                             <>
                                 <li className="nav-item">
-                                    <button onClick={handleLogout} className="nav-link btn btn-secondary">
+                                    <button onClick={handleLogout} className="nav-link btn btn-secondary me-1">
+                                        <IoIosLogOut className="me-1" />
                                         Logout
                                     </button>
                                 </li>
                                 <li className="nav-item">
-                                    <NavLink to="/profile" className="nav-link">
+                                    <NavLink to={`/profile/${user.userId}`} className="nav-link">
+                                        <IoPersonOutline className="me-1" />
                                         Profile
                                     </NavLink>
                                 </li>
@@ -76,12 +85,14 @@ const NavBar = () => {
                             // if user is not logged in then show login and signup links
                             <>
                                 <li className="nav-item">
-                                    <NavLink to="/login" className="nav-link btn btn-primary">
+                                    <NavLink to="/login" className="nav-link btn btn-primary me-1">
+                                        <IoIosLogIn className="me-1" />
                                         Login
                                     </NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink to="/signup" className="nav-link btn btn-primary">
+                                        <IoPersonAddOutline className="me-1" />
                                         Signup
                                     </NavLink>
                                 </li>

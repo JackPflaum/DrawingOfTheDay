@@ -16,7 +16,7 @@ const App = () => {
         <Route index element={<HomeContent />} />    {/* this is the default child route when '/' path is rendered */}
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
-        <Route path='/profile' element={<UserProfile />} />
+        <Route path='/profile/:userId' element={<UserProfile />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='*' element={<NoMatch />} />
       </Route>

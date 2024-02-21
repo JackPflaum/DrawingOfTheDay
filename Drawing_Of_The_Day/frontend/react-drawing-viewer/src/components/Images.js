@@ -199,11 +199,11 @@ const Images = ({ imagesList }) => {
                                 date={image.prompt_date} />)}
 
                             <div className="card-body">
-                                <NavLink to="" className="card-text">{image.username}</NavLink>
+                                <NavLink to={`/profile/${image.user_id}`} className="card-text">{image.username}</NavLink>
                                 <LikeDislikeButton image={image} handleLikeDislike={handleLikeDislike} />
                                 {localError && <p className="error-message">{localError}</p>}
 
-                                {/*image delete button only available in UserProfile component for the owner of the profile*/}
+                                {/*image delete button only to the owner of the profile*/}
                                 { user && user.username === image.username && (
                                     <button className="btn btn-danger" onClick={() => handleDelete(image.id)}>Delete</button>
                                 )}

@@ -5,8 +5,6 @@ from rest_framework.response import Response
 from rest_framework import status, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from backend.drawings.models import Image
@@ -17,10 +15,10 @@ from backend.drawings.serializers import ImageSerializer
 @permission_classes([IsAuthenticated])
 def check_authorization(request):
     """check if the user is authenticated"""
-    # if user is authenticated then they will have access to this view and return username
+    # if user is authenticated then they will have access to this view and return username and id
     # get user details and return it to frontend
-    username = request.user.username
-    context = {'username': username }
+    user = request.user
+    context = {'username': user.username, 'userId': user.id }
     return Response(context)
 
 
@@ -57,20 +55,22 @@ def signup(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def profile(request):
+def profile(request, user_id):
     """user profile page for presenting user images that they have uploaded"""
     try:
         # get user images, serialize data and return to profile page
-        user = request.user
+        user = User.objects.get(id=user_id)
         user_images = Image.objects.filter(user=user).order_by('-upload_date')
         image_data = ImageSerializer(user_images, many=True).data if user_images else None
+
+        # get username for owner of the profile page
+        username = user.username
+
+        return Response({'images': image_data, 'username': username})
     except User.DoesNotExist:
         return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as error:
         return Response({'error': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    return Response({'images': image_data})
 
 
 @api_view(['DELETE'])

@@ -16,13 +16,11 @@ export const AuthProvider = ({ children }) => {
         const checkAuthenticationStatus = async () => {
             try {
                 // check if user has valid access token for authentication
-                const accessToken = Cookies.get('accessToken');
-                const response = await axiosRequestInstance.get('http://localhost:8000/api/check-auth/', 
-                    {headers: {Authorization: `Bearer ${accessToken}`}});
+                const response = await axiosRequestInstance.get('http://localhost:8000/api/check-auth/');
 
                 // set user details from returned data
-                const username = response.data.username;
-                setUser({username: username});
+                const { username, userId } = response.data;
+                setUser({username: username, userId: userId});
                 
             } catch (error) {
                 if (error.response && error.response.status === 401) {
@@ -58,9 +56,12 @@ export const AuthProvider = ({ children }) => {
             const refreshToken = response.data.refresh;
             Cookies.set('refreshToken', refreshToken, {secure: secureAttribute, sameSite: 'Strict', path: '/' });
 
-            // deconstruct username from loginData and set to user
-            const { username } = loginData;
-            setUser(username);
+            // make request for user details
+            const userResponse = await axiosRequestInstance('http://localhost:8000/api/check-auth/')
+
+            // deconstruct username and user id from response and set in user state
+            const { username, userId } = userResponse.data;
+            setUser({username: username, userId: userId});
 
         } catch (error) {
             // if server side error message set error, otherwise set generic error message

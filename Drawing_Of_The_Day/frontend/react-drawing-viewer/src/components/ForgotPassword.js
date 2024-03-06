@@ -8,14 +8,16 @@ const ForgotPassword = () => {
     // ForgotPassword component error messages
     const [ errorLocal, setErrorLocal ] = useState('');
 
-    const handlePasswordReset = async () => {
+    const handleForgotPassword = async () => {
         if (!email) {
             setErrorLocal('Email field is required.');
             return;
         }
 
         try {
-            const response = await axios.post('http://localhost:8000/api/forgot-password/', email);
+            const response = await axios.post('http://localhost:8000/api/password-reset/', { email: email });
+
+            // get response and tell user to check email
         } catch (error) {
             console.log('Error: ', error);
         }
@@ -25,7 +27,7 @@ const ForgotPassword = () => {
         <div className="container">
             <div className="row align-items-center justify-content-center">
                 <h2>Reset Password</h2>
-                <p>Please enter your email address and we will send you a link to reset your password.</p>
+                <p>Please enter your email address and we will send you an email to reset your password.</p>
                 <input
                     type="text"
                     className=""
@@ -34,7 +36,7 @@ const ForgotPassword = () => {
                     placeholder="Enter your email"
                     onChange={(e) => setEmail(e.target.value)} />
                     { errorLocal && <p className="error-message">{errorLocal}</p>}
-                <button className="btn btn-primary" onClick={handlePasswordReset}></button>
+                <button className="btn btn-primary" onClick={handleForgotPassword}>Send Email</button>
             </div>
         </div>
     );

@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'rest_framework_simplejwt',
+    'rest_framework_simplejwt',    # JWT (JSON Web Token) authentication. Extention of Django REST Framework
+    'django_rest_passwordreset',    # handles password resets in RESTful API context.
 
     # For handling Cross-Origin Resource Sharing (CORS)
     # Enables communication between frontend and backend when hosted on different origins (e.g. domains, ports, protocols)
@@ -153,6 +154,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # media files uploaded through model fields are stored in media folder.
@@ -163,3 +165,7 @@ MEDIA_URL = '/media/'    # the URL prefix for serving the media files.
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+######## Email Configuration ###########
+EMAIL_BACKEND = 'django.core.mail.backends.smpt.EmailBackend'

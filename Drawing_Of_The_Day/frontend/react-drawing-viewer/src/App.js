@@ -7,6 +7,7 @@ import Signup from './components/Signup';
 import NoMatch from './components/NoMatch';
 import UserProfile from './components/UserProfile';
 import ForgotPassword from './components/ForgotPassword';
+import PasswordReset from './components/PasswordReset';
 
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
         <Route path='/signup' element={<Signup />} />
         <Route path='/profile/:userId' element={<UserProfile />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/password-reset' element={<PasswordReset />} />
         <Route path='*' element={<NoMatch />} />
       </Route>
     </Routes>

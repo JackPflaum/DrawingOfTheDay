@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-import django_rest_passwordreset
+from backend.users import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('backend.drawings.urls')),
     path('api/', include('backend.users.urls')),
-    path('api/password_reset/', include(django_rest_passwordreset.urls), namespace='password_reset'),
+    path('api/confirm_email_exists/', views.confirm_email_exists, name='confirm_email_exists'),
+    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]

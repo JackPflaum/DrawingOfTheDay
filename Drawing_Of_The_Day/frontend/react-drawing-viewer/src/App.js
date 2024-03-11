@@ -19,7 +19,7 @@ const App = () => {
         <Route path='/signup' element={<Signup />} />
         <Route path='/profile/:userId' element={<UserProfile />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/password-reset' element={<PasswordReset />} />
+        <Route path='/password-reset/confirm' element={<PasswordReset />} />
         <Route path='*' element={<NoMatch />} />
       </Route>
     </Routes>

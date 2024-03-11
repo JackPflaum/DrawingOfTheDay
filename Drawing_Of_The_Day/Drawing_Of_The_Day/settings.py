@@ -168,4 +168,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 ######## Email Configuration ###########
-EMAIL_BACKEND = 'django.core.mail.backends.smpt.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'   # send email to console during development

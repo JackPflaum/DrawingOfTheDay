@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
+// create new user password
 const PasswordReset = () => {
-    // extract token query parameter from of the URL
-    const { token } = useParams();
+    // extract reset token query parameter from of the URL
+    const location = useLocation();
+    const token = new URLSearchParams(location.search).get('token');
 
     const navigate = useNavigate();
 
@@ -27,7 +28,8 @@ const PasswordReset = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8000/api/password_reset/confirm/', 
+            // post new password change using django_rest_passwordreset package
+            const response = await axios.post('http://localhost:8000/api/password_reset/confirm/',
                 {token: token, password: password1}
             );
 
@@ -38,7 +40,7 @@ const PasswordReset = () => {
             navigate('/login')
         } catch (error) {
             // handle error response
-            console.log('Password reset error: ', error.message);
+            console.log('Password reset error: ', error.response);
             setErrorLocal('An error occured. Please try again.');
         }
     };

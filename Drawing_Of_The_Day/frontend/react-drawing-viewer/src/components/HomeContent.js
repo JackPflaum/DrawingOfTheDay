@@ -74,7 +74,7 @@ const HomeContent = () => {
     // initiate data fetching of image prompt and images when HomeContent component mounts.
     useEffect(() => {
         fetchData(data.date, data.orderOption);
-    }, [data.date, data.orderOption]);
+    }, [data.imagesList, data.date, data.orderOption]);
 
     const handleDateChange = (e) => {
         e.preventDefault();

@@ -19,6 +19,9 @@ const Images = ({ imagesList }) => {
     // imageModalStates holds an object of modal states with image_id as the key
     const [ imageModalStates, setImageModalStates ] = useState({});
 
+    // check if current URL path is the profile page
+    const hasProfileInUrl = window.location.pathname.includes('profile');
+
     // like and dislike data for each image is fetched from django backend and added to images
     const fetchImageLikes = async (imagesList) => {
         if (imagesList && imagesList.length > 0) {
@@ -194,15 +197,19 @@ const Images = ({ imagesList }) => {
                                 imagePrompt={image.prompt}
                                 date={image.prompt_date} />)}
 
-                            <div className="card-body">
-                                <NavLink to={`/profile/${image.user_id}`} className="card-text">{image.username}</NavLink>
-                                <LikeDislikeButton image={image} handleLikeDislike={handleLikeDislike} />
-                                {localError && <p className="error-message">{localError}</p>}
+                            <div className="card-body d-flex flex-column">
+                                {/*mt-auto pushes div to bottom of card body*/}
+                                <div className="mt-auto">
+                                    <NavLink to={`/profile/${image.user_id}`} className="card-text">{image.username}</NavLink>
+                                    <LikeDislikeButton image={image} handleLikeDislike={handleLikeDislike} />
+                                    {localError && <p className="error-message">{localError}</p>}
 
-                                {/*image delete button only to the owner of the profile*/}
-                                { user && user.username === image.username && (
-                                    <button className="btn btn-danger" onClick={() => handleDelete(image.id)}>Delete</button>
-                                )}
+                                    {/*image delete button only appears for the owner of the image and only on the profile page*/}
+                                    { hasProfileInUrl && user && user.username === image.username && (
+                                        <button className="btn btn-danger text-center" onClick={() => handleDelete(image.id)}>Delete</button>
+                                    )}
+                                </div>
+
                             </div>
                         </div>
                     ))

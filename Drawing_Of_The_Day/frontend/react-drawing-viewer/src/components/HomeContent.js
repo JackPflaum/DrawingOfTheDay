@@ -1,26 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import Header from './Header';
 import Images from './Images';
 import UploadModal from './UploadModal';
 import MessageModal from './MessageModal';
-import { useOnClickOutside } from '../hooks/customHooks';
 import { format } from 'date-fns';
 import { useAuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 
 
 const HomeContent = () => {
-    // for opening up Upload Image modal
-    const [ openModal, setOpenModal ] = useState(false);
+    // for handling opening and closing of Upload Image modal
+    const [ modalShow, setModalShow ] = useState(false);
+    const handleShow = () => setModalShow(true);
+    const handleClose = () => setModalShow(false);
 
-    // for opening up Message Modal
+    // for handling opening and closing of Message Modal
     const [ openMessageModal, setOpenMessageModal ] = useState(false);
-    const ref = useRef();
+    const handleMessageOpen = () => setOpenMessageModal(true);
+    const handleMessageClose = () => setOpenMessageModal(false);
 
-    // for redirecting user
+
+    // for redirecting user to certain page
     const navigate = useNavigate();
 
+    // extract user to determine if they are authorized
     const { user } = useAuthContext();
 
     // set intial date to today and use date-fns format function to format the date
@@ -100,21 +105,15 @@ const HomeContent = () => {
     const openUploadModal = () => {
         // redirect user to login page if user is not logged in
         if (user) {
-            setOpenModal(true);
+            setModalShow(true);
         } else {
             navigate('/login');
         }
     };
 
-    const closeUploadModal = () => {
-        setOpenModal(false);
-    };
-
-    // when the user mouseclicks outside an open modal it calls custom hook to close the modal.
-    useOnClickOutside(ref, openModal, () => setOpenModal(false));
 
     return (
-        <div className={openModal ? "container backdrop" : "container"}>
+        <div className="container">
             { data.date && data.imagePrompt ? (
                 <Header date={data.date} imagePrompt={data.imagePrompt} />
             ) : (
@@ -122,14 +121,14 @@ const HomeContent = () => {
             )}
             <div className="d-flex justify-content-between">
                 { data.date === formattedDate ? (
-                    <button className="btn btn-primary" onClick={openUploadModal}>Upload Drawing</button>
+                    <Button variant="primary" onClick={openUploadModal}>Upload Drawing</Button>
                 ) : (
-                    <button className="btn btn-primary" onClick={() => setOpenMessageModal(true)}>Upload Drawing</button>
+                    <Button variant="primary" onClick={handleMessageOpen}>Upload Drawing</Button>
                 )}
-                { openModal && <UploadModal ref={ref} isOpen={openModal} closeModal={closeUploadModal} />}
-
+                { modalShow && <UploadModal modalShow={modalShow} handleClose={handleClose} />}
+                
                 {/* Message Modal: for when users try upload on a date other than today */}
-                { openMessageModal && <MessageModal ref={ref} isOpen={openMessageModal} closeModal={() => setOpenMessageModal(false)} />}
+                { openMessageModal && <MessageModal openMessageModal={openMessageModal} handleMessageClose={handleMessageClose} />}
 
                 <div className="d-flex">
                     <select name="orderOptions" className="me-2" onChange={handleOrderChange}>

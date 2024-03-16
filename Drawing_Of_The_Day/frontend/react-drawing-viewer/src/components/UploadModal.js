@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import { Modal, Button } from 'react-bootstrap';
 
 
-const UploadModal = ({ modalShow, handleClose }) => {
+const UploadModal = ({ modalShow, handleClose, handleUploadSuccess }) => {
     const [ imageFile, setImageFile ] = useState(null);
     const navigate = useNavigate();
 
@@ -37,11 +37,15 @@ const UploadModal = ({ modalShow, handleClose }) => {
 
             console.log('upload axios response: ',response.data);
 
-            // set image state and error messages back to null and close modal
+            // set image state and error messages back to null
             setImageFile(null);
             setLocalError();
-            handleClose();
-        
+
+            // triggers update of imagesList in HomeContent component
+            handleUploadSuccess(response.data.newImageData);
+
+            // close modal
+            handleClose();        
         } catch (error) {
             // first if block: axiosResponseInstance had an error when refreshing token
             if (error.response && error.response.status === 401) {

@@ -74,7 +74,7 @@ const HomeContent = () => {
     // initiate data fetching of image prompt and images when HomeContent component mounts.
     useEffect(() => {
         fetchData(data.date, data.orderOption);
-    }, [data.imagesList, data.date, data.orderOption]);
+    }, [data.date, data.orderOption]);
 
     const handleDateChange = (e) => {
         e.preventDefault();
@@ -102,6 +102,14 @@ const HomeContent = () => {
         }));
     };
 
+    // adds newly uploaded image to imagesList
+    const handleUploadSuccess = (newImage) => {
+        setData((prevData) => ({
+            ...prevData,
+            imagesList: [newImage, ...prevData.imagesList],
+        }));
+    }
+
     const openUploadModal = () => {
         // redirect user to login page if user is not logged in
         if (user) {
@@ -125,7 +133,7 @@ const HomeContent = () => {
                 ) : (
                     <Button variant="primary" onClick={handleMessageOpen}>Upload Drawing</Button>
                 )}
-                { modalShow && <UploadModal modalShow={modalShow} handleClose={handleClose} />}
+                { modalShow && <UploadModal modalShow={modalShow} handleClose={handleClose} handleUploadSuccess={handleUploadSuccess} />}
                 
                 {/* Message Modal: for when users try upload on a date other than today */}
                 { openMessageModal && <MessageModal openMessageModal={openMessageModal} handleMessageClose={handleMessageClose} />}

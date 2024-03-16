@@ -66,9 +66,11 @@ def upload_image(request):
         # cannot submit for previous days
         image_prompt = ImagePrompt.objects.get(date=current_date)
         
-        # save image file to Image model
-        Image.objects.create(image_prompt=image_prompt, user=request.user, image=image)
-        return Response({'success': 'Image uploaded successfully'}, status=status.HTTP_201_CREATED)
+        # save image file to Image model and send back serialized image data to frontend
+        new_image = Image.objects.create(image_prompt=image_prompt, user=request.user, image=image)
+        new_image_data = ImageSerializer(new_image).data
+
+        return Response({'success': 'Image uploaded successfully','newImageData': new_image_data},status=status.HTTP_201_CREATED)
 
     except PermissionDenied:
         return Response({'error': 'Unauthorized access'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -88,8 +90,6 @@ def image_likes_no_auth(request):
     # retrieve image ids from request paramaters
     # some frameworks automatically add '[]' to paramater name ('image_ids')to signify that an array is being sent in URL
     image_ids = request.GET.getlist('image_ids', []) or request.GET.getlist('image_ids[]')
-    print('Request GET: ', request.GET)
-    print('image_ids: ', image_ids)
 
     # append likes data to image ids
     for image_id in image_ids:
@@ -97,7 +97,6 @@ def image_likes_no_auth(request):
         like_dislike_count = LikeSerializer(image).data
         image_likes_dislikes_count.append({image_id: like_dislike_count})
 
-    print('Image likes and dislikes count: ', image_likes_dislikes_count)
     return Response(image_likes_dislikes_count, status=status.HTTP_200_OK)
 
 
@@ -112,8 +111,6 @@ def image_likes_auth(request):
     # retrieve image ids from request paramaters
     # some frameworks automatically add '[]' to paramater name ('image_ids')to signify that an array is being sent in URL
     image_ids = request.GET.getlist('image_ids',[]) or request.GET.getlist('image_ids[]')
-    print('Request GET: ', request.GET)
-    print('image_ids: ', image_ids)
 
     for image_id in image_ids:
         image = Image.objects.filter(id=image_id).first()
@@ -129,8 +126,6 @@ def image_likes_auth(request):
         else:
             like_status_list.append({image_id: None})
 
-    print('Count List: ', count_list)
-    print('Like status List: ', like_status_list)
     return Response({'likesDislikesCount': count_list, 'likeStatusList': like_status_list}, status=status.HTTP_200_OK)
 
 

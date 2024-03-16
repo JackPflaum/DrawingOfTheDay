@@ -160,10 +160,14 @@ const Images = ({ imagesList }) => {
     };
 
 
+    // delete image if user is logged in.
     const handleDelete = async (imageId) => {
-        // delete image if user is logged in.
         try {
+            // request deletion of image in the backend
             await axiosRequestInstance.delete('http://localhost:8000/api/delete-image/', {data: {imageId}} );
+
+            // create new imagesState by filtering out deleted image
+            setImagesState(prevImageState => prevImageState.filter(image => image.id !== imageId));
         } catch (error) {
             console.log('Delete Image Error: ', error);
             setLocalError(`Error: ${error}`);

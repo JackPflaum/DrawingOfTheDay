@@ -1,24 +1,27 @@
+import React from 'react';
+import { Modal, Button } from 'react-bootstrap';
 import '../css/ImageModal.css';
 
-const ImageModal = ({isOpen, closeModal, ref, imageUrl, username, imagePrompt, date}) => {
-
-    return (
+const ImageModal = ({ showModal, closeModal, imageUrl, username, imagePrompt, date }) => {
+  return (
+    <Modal show={showModal} onHide={closeModal} size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title className="ms-auto">
+          {date}: {imagePrompt}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{display: "flex", justifyContent: "center"}}>
         <div>
-        { isOpen && <div className="modal-backdrop"></div>}
-        <div ref={ref} className="modal-content">
-            <div className="d-flex justify-content-between">
-                <h3>{date}: {imagePrompt}</h3>
-                <span onClick={closeModal}>&times;</span>
-            </div>
-            <img src={`http://localhost:8000/${imageUrl}`} ></img>
-            <p>{username}</p>
-            <div className="d-flex pt-3">
-                <button className="btn btn-secondary" onClick={closeModal}>Close</button>
-            </div>
+          <img src={`http://localhost:8000/${imageUrl}`} alt="modal-img" className="img-fluid" />
         </div>
-    </div>
-    );
-
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={closeModal}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 };
 
 export default ImageModal;

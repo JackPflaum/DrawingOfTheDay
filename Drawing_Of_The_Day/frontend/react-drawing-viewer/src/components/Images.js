@@ -1,11 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import axiosRequestInstance from '../api/axiosRequestInstance';
-import Cookies from 'js-cookie';
 import { NavLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import PropTypes from 'prop-types';
-import '../css/images.css';
 import { HiOutlineThumbDown, HiOutlineThumbUp, HiThumbDown, HiThumbUp } from "react-icons/hi";
 import ImageModal from './ImageModal';
 
@@ -20,7 +18,6 @@ const Images = ({ imagesList }) => {
 
     // imageModalStates holds an object of modal states with image_id as the key
     const [ imageModalStates, setImageModalStates ] = useState({});
-    const ref = useRef();
 
     // like and dislike data for each image is fetched from django backend and added to images
     const fetchImageLikes = async (imagesList) => {
@@ -190,8 +187,7 @@ const Images = ({ imagesList }) => {
                                 <img src={`http://localhost:8000/${image.url}`} alt={image.id} className=" img-fluid" />
                             </div>
                             {imageModalStates[image.id] && (<ImageModal
-                                ref={ref}
-                                isopen={imageModalStates[image.id]}
+                                showModal={imageModalStates[image.id]}
                                 closeModal={() => toggleImageModal(image.id)}
                                 imageUrl={image.url}
                                 username={image.username}

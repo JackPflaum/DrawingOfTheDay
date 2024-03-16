@@ -7,7 +7,12 @@ const ImageModal = ({ showModal, closeModal, imageUrl, username, imagePrompt, da
 
   // allows user to download drawing
   const handleDownloadDrawing = () => {
-    saveAs(`http://localhost:8000/${imageUrl}`, `drawing-${date}.jpg`);
+    try {
+      //using file-saver package to download image file
+      saveAs(`http://localhost:8000/${imageUrl}`, `drawing-${date}.jpg`);
+    } catch (error) {
+      console.error('Error downloading drawing:', error);
+    }
   }
 
 

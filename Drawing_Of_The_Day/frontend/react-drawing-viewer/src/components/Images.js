@@ -190,8 +190,8 @@ const Images = ({ imagesList }) => {
                 {imagesState.length > 0 ? (
                     imagesState.map((image) => (
                         <div key={image.id} className="card col-md-3 mb-3 me-4">
-                            <div onClick={() => toggleImageModal(image.id)}>
-                                <img src={`http://localhost:8000/${image.url}`} alt={image.id} className=" img-fluid" />
+                            <div onClick={() => toggleImageModal(image.id)} className="d-flex align-items-center" style={{ height: '100%' }}>
+                                <img src={`http://localhost:8000/${image.url}`} alt={image.id} className="img-fluid" />
                             </div>
                             {imageModalStates[image.id] && (<ImageModal
                                 showModal={imageModalStates[image.id]}

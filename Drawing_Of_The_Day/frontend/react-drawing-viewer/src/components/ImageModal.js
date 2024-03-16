@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import '../css/ImageModal.css';
 import { saveAs } from 'file-saver';
+import { BsDownload } from "react-icons/bs";
 
 const ImageModal = ({ showModal, closeModal, imageUrl, username, imagePrompt, date }) => {
 
@@ -30,7 +31,7 @@ const ImageModal = ({ showModal, closeModal, imageUrl, username, imagePrompt, da
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={closeModal}>Close</Button>
-        <Button variant="primary" onClick={handleDownloadDrawing}>Download Drawing</Button>
+        <Button variant="primary" onClick={handleDownloadDrawing}>Download Drawing <BsDownload/></Button>
       </Modal.Footer>
     </Modal>
   );

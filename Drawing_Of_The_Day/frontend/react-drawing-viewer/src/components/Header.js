@@ -20,8 +20,8 @@ const Header = ({ date, imagePrompt }) => {
 
     return (
         <div className="text-center mt-3">
-            <h4>{datePattern}</h4>
-            <p>Prompt Text: {imagePrompt}</p>
+            <h2>{datePattern}</h2>
+            <p>{imagePrompt}</p>
         </div>
     );
 };

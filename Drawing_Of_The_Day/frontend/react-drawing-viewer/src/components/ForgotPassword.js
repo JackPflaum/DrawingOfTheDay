@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import axios from 'axios';
 import '../css/GeneralStyling.css';
+import { Form, Button } from 'react-bootstrap';
+import { MdErrorOutline } from "react-icons/md";
+import { GrStatusGood } from "react-icons/gr";
 
 
 const ForgotPassword = () => {
@@ -58,18 +61,19 @@ const ForgotPassword = () => {
     return (
         <div className="container">
             <div className="row align-items-center justify-content-center">
-                <h2>Reset Password</h2>
-                <p>Please enter your email address and we will send you an email to reset your password.</p>
-                { message && <p className="success-message">{message}</p>}
-                <input
-                    type="text"
-                    className=""
-                    value={email}
-                    name="email"
-                    placeholder="Enter your email"
-                    onChange={(e) => setEmail(e.target.value)} />
-                    { errorLocal && <p className="error-message">{errorLocal}</p>}
-                <button className="btn btn-primary" onClick={handleForgotPassword}>Send Email</button>
+                <div className="col-lg-6">
+                    <h3 className="text-center">Reset Password</h3>
+                    <p>Please enter your email address and we will send you an email to reset your password.</p>
+                    { message && <p className="success-message d-flex align-items-center"><GrStatusGood />{message}</p>}
+                    <Form.Control
+                        type="text"
+                        value={email}
+                        name="email"
+                        placeholder="Enter your email"
+                        onChange={(e) => setEmail(e.target.value)} />
+                        { errorLocal && <p className="error-message d-flex align-items-center"><MdErrorOutline />{errorLocal}</p>}
+                    <Button variant="primary mt-2" onClick={handleForgotPassword}>Send Email</Button>
+                </div>
             </div>
         </div>
     );

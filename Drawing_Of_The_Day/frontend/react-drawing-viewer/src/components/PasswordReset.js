@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Form, Button } from 'react-bootstrap';
+import { MdErrorOutline } from "react-icons/md";
+
 
 // create new user password
 const PasswordReset = () => {
@@ -48,23 +51,29 @@ const PasswordReset = () => {
     return (
         <div className="container">
             <div className="row align-items-center justify-content-center">
-                <h2>Change Your Password</h2>
-                <input
-                    type="password"
-                    className=""
-                    value={password1}
-                    name="password1"
-                    placeholder="Enter new password"
-                    onChange={(e) => setPassword1(e.target.value)} />
-                <input
-                    type="password"
-                    className=""
-                    value={password2}
-                    name="password2"
-                    placeholder="Confirm new password"
-                    onChange={(e) => setPassword2(e.target.value)} />
-                    { errorLocal && <p className="error-message">{errorLocal}</p>}
-                <button className="btn btn-primary" onClick={handlePasswordReset}>Reset Password</button>
+                <div className="col-lg-6">
+                    <h3 className="text-center">Change Your Password</h3>
+                    <Form.Group>
+                        <Form.Label>New Password</Form.Label>
+                        <Form.Control
+                        type="password"
+                        value={password1}
+                        name="password1"
+                        placeholder="Enter new password"
+                        onChange={(e) => setPassword1(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control
+                        type="password"
+                        value={password2}
+                        name="password2"
+                        placeholder="Confirm new password"
+                        onChange={(e) => setPassword2(e.target.value)} />
+                        { errorLocal && <p className="error-message d-flex align-items-center"><MdErrorOutline />{errorLocal}</p>}
+                    </Form.Group>
+                    <Button variant="primary mt-2" onClick={handlePasswordReset}>Reset Password</Button>
+                </div>
             </div>
         </div>
     );

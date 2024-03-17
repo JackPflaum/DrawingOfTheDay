@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import axiosRequestInstance from '../api/axiosRequestInstance';
 import { NavLink } from 'react-router-dom';
@@ -6,6 +6,8 @@ import { useAuthContext } from '../context/AuthContext';
 import PropTypes from 'prop-types';
 import { HiOutlineThumbDown, HiOutlineThumbUp, HiThumbDown, HiThumbUp } from "react-icons/hi";
 import ImageModal from './ImageModal';
+import { LuPaintbrush } from "react-icons/lu";
+import { Button } from 'react-bootstrap';
 
 
 const Images = ({ imagesList }) => {
@@ -203,14 +205,15 @@ const Images = ({ imagesList }) => {
 
                             <div className="card-body d-flex flex-column">
                                 {/*mt-auto pushes div to bottom of card body*/}
-                                <div className="mt-auto">
-                                    <NavLink to={`/profile/${image.user_id}`} className="card-text">{image.username}</NavLink>
+                                <div className="d-flex flex-column mt-auto align-items-center">
+                                    {/*user profile link doesn't appear when on profile page*/}
+                                    { !hasProfileInUrl && <NavLink to={`/profile/${image.user_id}`} className="custom-link"><LuPaintbrush/>{image.username}</NavLink>}
                                     <LikeDislikeButton image={image} handleLikeDislike={handleLikeDislike} />
                                     {localError && <p className="error-message">{localError}</p>}
 
                                     {/*image delete button only appears for the owner of the image and only on the profile page*/}
                                     { hasProfileInUrl && user && user.username === image.username && (
-                                        <button className="btn btn-danger text-center" onClick={() => handleDelete(image.id)}>Delete</button>
+                                        <Button variant="danger" onClick={() => handleDelete(image.id)} className="mt-2">Delete</Button>
                                     )}
                                 </div>
 

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
+import { Form, Button } from 'react-bootstrap';
+import { MdErrorOutline } from "react-icons/md";
+
 
 const Login = () => {
     const { login, error, clearErrorMessage } = useAuthContext();
@@ -43,33 +46,35 @@ const Login = () => {
             <div className="row align-items-center justify-content-center">
                 <div className="col-lg-6 ">
                     <h3 className="text-center">Login</h3>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label className="form-label">Username</label>
-                            <input
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control
                                 type="text"
-                                className="form-control"
-                                value={loginData.email}
+                                value={loginData.username}
                                 name="username"
-                                placeholder="Enter your email"
+                                placeholder="Enter your username"
                                 onChange={(e) => setLoginData({...loginData, username: e.target.value})} />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Password</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control
                                 type="password"
-                                className="form-control"
                                 value={loginData.password}
                                 name="password"
                                 placeholder="Enter your password"
                                 onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
+                        </Form.Group>
+                        {error && <p className="error-message">{error}</p>}
+                        {errorLocal && <p className="error-message d-flex align-items-center"><MdErrorOutline />{errorLocal}</p>}
+                        <div>
+                            <NavLink to="/forgot-password">Forgot password?</NavLink>
                         </div>
-                        <button type="submit" className="btn btn-primary">Login</button>
-                    </form>
-                    {error && <p>{error}</p>}
-                    {errorLocal && <p>{errorLocal}</p>}
-                    <NavLink to="/forgot-password" className="text-decoration-none">Forgot password?</NavLink>
-                    <NavLink to="/signup">Signup here</NavLink>
+                        <Button type="submit" variant="primary mt-2">Login</Button>
+                    </Form>
+                    <div className="d-flex flex-column">
+                        <NavLink to="/signup">Signup here</NavLink>
+                    </div>  
                 </div>
             </div>
         </div>

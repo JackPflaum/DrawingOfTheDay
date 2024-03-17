@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import axiosResponseInstance from '../api/axiosResponseInstance';
 import '../css/UploadModal.css';
 import Cookies from 'js-cookie';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { MdErrorOutline } from "react-icons/md";
 
 
 const UploadModal = ({ modalShow, handleClose, handleUploadSuccess }) => {
@@ -92,9 +93,11 @@ const UploadModal = ({ modalShow, handleClose, handleUploadSuccess }) => {
                 <Modal.Title>Upload Drawing</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <label className="pb-2">Choose an image:</label>
-                <input type="file" className="from-control-file" name="image" accept="image/png, image/jpeg, image/jpg" onChange={handleFileChange} />
-                {localError && <p className="error-message">{localError}</p>}
+                <Form.Group>
+                    <Form.Label className="pb-2">Choose an image:</Form.Label>
+                    <Form.Control type="file" name="image" accept="image/png, image/jpeg, image/jpg" onChange={handleFileChange} />
+                </Form.Group>
+                {localError && <p className="error-message d-flex align-items-center"><MdErrorOutline />{localError}</p>}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>Close</Button>

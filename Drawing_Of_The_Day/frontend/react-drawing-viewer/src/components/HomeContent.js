@@ -7,7 +7,7 @@ import MessageModal from './MessageModal';
 import { format } from 'date-fns';
 import { useAuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 
 
 const HomeContent = () => {
@@ -138,19 +138,19 @@ const HomeContent = () => {
                 {/* Message Modal: for when users try upload on a date other than today */}
                 { openMessageModal && <MessageModal openMessageModal={openMessageModal} handleMessageClose={handleMessageClose} />}
 
-                <div className="d-flex">
-                    <select name="orderOptions" className="me-2" onChange={handleOrderChange}>
+                <div className="d-flex col-lg-4 col-md-4">
+                    <Form.Select name="orderOptions" className="me-1" onChange={handleOrderChange}>
                         <option value="-upload_date">Latest</option>
                         <option value="upload_date">Oldest</option>
-                    </select>
-                    <input type="date" name="date" className="pr-4" value={data.date} onChange={handleDateChange} />
+                    </Form.Select>
+                    <Form.Control type="date" name="date" value={data.date} onChange={handleDateChange} />
                 </div>
 
             </div>
             { data.imagesList.length > 0 ? (
                 <Images imagesList={data.imagesList} />
             ) : (
-                <h3 className="text-center">No drawings have been submitted.</h3>
+                <h4 className="text-center mt-5">No drawings have been submitted.</h4>
             )}
         </div>
     );

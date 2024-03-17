@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { Form, Button } from 'react-bootstrap';
+import { MdErrorOutline } from "react-icons/md";
+
 
 const Signup = () => {
     const [ signupData, setSignupData ] = useState({
@@ -56,51 +59,47 @@ const Signup = () => {
             <div className="row align-items-center justify-content-center">
                 <div className="col-lg-6">
                     <h3 className="text-center">Signup</h3>
-                    <form onSubmit={handleSignupSubmit}>
-                        <div className="form-group">
-                            <label className="form-label">Email:</label>
-                            <input
+                    <Form onSubmit={handleSignupSubmit}>
+                        <Form.Group>
+                            <Form.Label>Email:</Form.Label>
+                            <Form.Control
                                 type="text"
-                                className="form-control custom-input"
                                 value={signupData.email}
                                 name="email"
                                 placeholder="Enter your email"
                                 onChange={(e) => setSignupData({...signupData, email: e.target.value})} />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Username:</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Username:</Form.Label>
+                            <Form.Control
                                 type="text"
-                                className="form-control custom-input"
                                 value={signupData.username}
                                 name="username"
                                 placeholder="Enter your username"
                                 onChange={(e) => setSignupData({...signupData, username: e.target.value})} />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Password:</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Password:</Form.Label>
+                            <Form.Control
                                 type="password"
-                                className="form-control custom-input"
                                 value={signupData.password1}
                                 name="password1"
                                 placeholder="Enter your password"
                                 onChange={(e) => setSignupData({...signupData, password1: e.target.value})} />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Confirm Password:</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Confirm Password:</Form.Label>
+                            <Form.Control
                                 type="password"
-                                className="form-control custom-input"
                                 value={signupData.password2}
                                 name="password2"
                                 placeholder="Confirm your password"
                                 onChange={(e) => setSignupData({...signupData, password2: e.target.value})} />
-                        </div>
-                        {localError && <p className="error-message">{localError}</p>}
-                        <button type="submit" className="btn btn-primary mt-2">Signup</button>
-                    </form>
-                    <NavLink to="/login">Already registered? Login here</NavLink>
+                        </Form.Group>
+                        {localError && <p className="error-message d-flex align-items-center"><MdErrorOutline />{localError}</p>}
+                        <Button type="submit" variant="primary mt-2">Signup</Button>
+                    </Form>
+                    <NavLink to="/login" className="mt-2">Already registered? Login here</NavLink>
                 </div>
             </div>           
         </div>

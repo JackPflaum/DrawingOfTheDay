@@ -42,11 +42,19 @@ const NavBar = () => {
         }
     };
 
+
+    // full page reload when user clicks navbar logo or Home link
+    const handlePageRefresh = () => {
+        navigate('/');
+        window.location.reload();
+    };
+
+
     return (
         // navbar with authorization links only showing under certain logged in conditions
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
-                <NavLink to="/" className="navbar-brand">
+                <NavLink to="/" className="navbar-brand" onClick={handlePageRefresh}>
                     <img src="paint_brush_logo.png" width="40" height="40" className="d-inline-block rounded-circle me-2" alt="logo"></img>
                     Drawing Of The Day
                 </NavLink>
@@ -59,7 +67,9 @@ const NavBar = () => {
                         {links.map((link) => {
                             return (
                                 <li key={link.text} className="nav-item me-1">
-                                    <NavLink to={link.path} className="nav-link">
+                                    <NavLink to={link.path}
+                                    className="nav-link" 
+                                    onClick={link.text === 'Home' ? handlePageRefresh : null}>
                                         {link.text}
                                     </NavLink>
                                 </li>

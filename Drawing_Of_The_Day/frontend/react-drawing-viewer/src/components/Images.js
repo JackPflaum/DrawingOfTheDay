@@ -98,22 +98,22 @@ const Images = ({ imagesList }) => {
     const LikeDislikeButton = ({ image, handleLikeDislike }) => (
         <div>
             { image.like === true && (
-                <>
+                <div className="custom-font">
                     <HiThumbUp onClick={() => handleLikeDislike(image.id, null)} /> {image.likesCount}
                     <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.dislikesCount}
-                </>
+                </div>
             )}
             { image.like === false && (
-                <>
+                <div className="custom-font">
                     <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesCount}
                     <HiThumbDown onClick={() => handleLikeDislike(image.id, null)} /> {image.dislikesCount}
-                </>
+                </div>
              )}
              { image.like === null && (
-                 <>
+                 <div className="custom-font">
                      <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesCount}
                      <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.dislikesCount}
-                 </>
+                 </div>
              )}
         </div>
     );
@@ -207,7 +207,12 @@ const Images = ({ imagesList }) => {
                                 {/*mt-auto pushes div to bottom of card body*/}
                                 <div className="d-flex flex-column mt-auto align-items-center">
                                     {/*user profile link doesn't appear when on profile page*/}
-                                    { !hasProfileInUrl && <NavLink to={`/profile/${image.user_id}`} className="custom-link"><LuPaintbrush/>{image.username}</NavLink>}
+                                    { !hasProfileInUrl && 
+                                        <NavLink to={`/profile/${image.user_id}`} className="custom-link">
+                                            <h5>
+                                                <LuPaintbrush/>{image.username}
+                                            </h5>
+                                        </NavLink> }
                                     <LikeDislikeButton image={image} handleLikeDislike={handleLikeDislike} />
                                     {localError && <p className="error-message">{localError}</p>}
 

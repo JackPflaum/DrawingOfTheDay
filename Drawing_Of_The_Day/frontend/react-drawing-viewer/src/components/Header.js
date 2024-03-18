@@ -19,9 +19,9 @@ const Header = ({ date, imagePrompt }) => {
     }, [date]);
 
     return (
-        <div className="text-center mt-3">
+        <div className="text-center mt-3 mb-3">
             <h2>{datePattern}</h2>
-            <p>{imagePrompt}</p>
+            <h5>{imagePrompt}</h5>
         </div>
     );
 };

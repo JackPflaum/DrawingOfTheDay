@@ -70,7 +70,7 @@ const NavBar = () => {
                                     <NavLink to={link.path}
                                     className="nav-link" 
                                     onClick={link.text === 'Home' ? handlePageRefresh : null}>
-                                        {link.text}
+                                        <h5>{link.text}</h5>
                                     </NavLink>
                                 </li>
                             )})
@@ -80,14 +80,16 @@ const NavBar = () => {
                             <>
                                 <li className="nav-item">
                                     <NavLink onClick={handleLogout} className="nav-link me-1">
-                                        <IoIosLogOut className="me-1" />
-                                        Logout
+                                        <h5>
+                                            <IoIosLogOut className="me-1" />Logout
+                                        </h5>
                                     </NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink to={`/profile/${user.userId}`} className="nav-link">
-                                        <IoPersonOutline className="me-1" />
-                                        Profile
+                                        <h5>
+                                            <IoPersonOutline className="me-1" />Profile
+                                        </h5>
                                     </NavLink>
                                 </li>
                             </>
@@ -96,14 +98,16 @@ const NavBar = () => {
                             <>
                                 <li className="nav-item">
                                     <NavLink to="/login" className="nav-link me-1">
-                                        <IoIosLogIn className="me-1" />
-                                        Login
+                                        <h5>
+                                            <IoIosLogIn className="me-1" />Login
+                                        </h5>
                                     </NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink to="/signup" className="nav-link">
-                                        <IoPersonAddOutline className="me-1" />
-                                        Signup
+                                        <h5>
+                                            <IoPersonAddOutline className="me-1" />Signup
+                                        </h5>
                                     </NavLink>
                                 </li>
                             </>

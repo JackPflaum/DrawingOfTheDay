@@ -21,7 +21,7 @@ const ImageModal = ({ showModal, closeModal, imageUrl, username, imagePrompt, da
     <Modal show={showModal} onHide={closeModal} size="lg">
       <Modal.Header closeButton>
         <Modal.Title className="ms-auto">
-          {date}: {imagePrompt}
+          <h3>{date}: {imagePrompt}</h3>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{display: "flex", justifyContent: "center"}}>

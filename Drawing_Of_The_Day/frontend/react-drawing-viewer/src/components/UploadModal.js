@@ -90,7 +90,9 @@ const UploadModal = ({ modalShow, handleClose, handleUploadSuccess }) => {
     return (
         <Modal show={modalShow} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Upload Drawing</Modal.Title>
+                <Modal.Title>
+                    <h2>Upload Drawing</h2>
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form.Group>

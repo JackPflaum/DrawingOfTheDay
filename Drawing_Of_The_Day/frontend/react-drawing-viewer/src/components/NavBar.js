@@ -52,9 +52,9 @@ const NavBar = () => {
 
     return (
         // navbar with authorization links only showing under certain logged in conditions
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg">
             <div className="container">
-                <NavLink to="/" className="navbar-brand" onClick={handlePageRefresh}>
+                <NavLink to="/" className="navbar-brand nav-heading" onClick={handlePageRefresh}>
                     <img src="paint_brush_logo.png" width="40" height="40" className="d-inline-block rounded-circle me-2" alt="logo"></img>
                     Drawing Of The Day
                 </NavLink>
@@ -79,10 +79,10 @@ const NavBar = () => {
                             // if user is logged in then show logout button and profile link
                             <>
                                 <li className="nav-item">
-                                    <button onClick={handleLogout} className="nav-link btn btn-secondary me-1">
+                                    <NavLink onClick={handleLogout} className="nav-link me-1">
                                         <IoIosLogOut className="me-1" />
                                         Logout
-                                    </button>
+                                    </NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink to={`/profile/${user.userId}`} className="nav-link">
@@ -95,13 +95,13 @@ const NavBar = () => {
                             // if user is not logged in then show login and signup links
                             <>
                                 <li className="nav-item">
-                                    <NavLink to="/login" className="nav-link btn btn-primary me-1">
+                                    <NavLink to="/login" className="nav-link me-1">
                                         <IoIosLogIn className="me-1" />
                                         Login
                                     </NavLink>
                                 </li>
                                 <li className="nav-item">
-                                    <NavLink to="/signup" className="nav-link btn btn-primary">
+                                    <NavLink to="/signup" className="nav-link">
                                         <IoPersonAddOutline className="me-1" />
                                         Signup
                                     </NavLink>

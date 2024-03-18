@@ -125,7 +125,7 @@ const HomeContent = () => {
             { data.date && data.imagePrompt ? (
                 <Header date={data.date} imagePrompt={data.imagePrompt} />
             ) : (
-                <p className="text-center mt-5">Loading...</p>
+                <h4 className="text-center mt-5">Loading...</h4>
             )}
             <div className="d-flex justify-content-between">
                 { data.date === formattedDate ? (

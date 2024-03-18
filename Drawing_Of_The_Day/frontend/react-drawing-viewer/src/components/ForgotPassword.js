@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import axios from 'axios';
-import '../css/GeneralStyling.css';
 import { Form, Button } from 'react-bootstrap';
 import { MdErrorOutline } from "react-icons/md";
 import { GrStatusGood } from "react-icons/gr";

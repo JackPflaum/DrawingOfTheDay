@@ -1,0 +1,45 @@
+body {
+    background-color: rgb(239, 243, 248);
+}
+
+h1, h2, h3, h4, h5, h6, .nav-heading {
+    font-family: "Cabin Sketch", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+/*navigation bar*/
+.navbar {
+    background-color: white;
+}
+
+.nav-item.nav-link {
+    text-decoration: none;
+    transition: color 0.3s ease;
+    color: black;
+}
+
+.nav-item.nav-link:hover {
+    color: red;
+}
+
+/*username link associated with image*/
+.custom-link {
+    text-decoration: none;
+    color: black;
+}
+
+.custom-link:hover {
+    font-family: "Cabin Sketch", sans-serif;
+    color: black;
+}
+
+.success-message {
+    color: green;
+}
+
+/*error messages styling*/
+.error-message {
+    color: red;
+    margin-top: 5px;
+}

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { Form, Button } from 'react-bootstrap';
+import { Modal, Form, Button } from 'react-bootstrap';
 import { MdErrorOutline } from "react-icons/md";
 
 
-const Signup = () => {
+const Signup = ({ showSignupModal, handleCloseSignup, handleOpenLogin }) => {
     const [ signupData, setSignupData ] = useState({
         email: '',
         username: '',
@@ -18,16 +18,25 @@ const Signup = () => {
 
     const [ localError, setLocalError ] = useState('');
 
+    // clears the local error messages after 3 seconds
+    const clearLocalError = () => {
+        setTimeout(() => {
+            setLocalError('');
+        }, 3000);
+    }
+
     const handleSignupSubmit = async (e) => {
         e.preventDefault();
 
         if (!signupData.email || !signupData.username || !signupData.password2 || !signupData.password2) {
             setLocalError('All fields are required!');
+            clearLocalError();
             return;
         };
 
         if (signupData.password1 !== signupData.password2 ) {
             setLocalError('Passwords do not match!');
+            clearLocalError();
             return;
         };
 
@@ -43,22 +52,28 @@ const Signup = () => {
             const refreshToken = response.data.refresh;
             Cookies.set('RefreshToken', refreshToken, { httpOnly: true, secure: secureAttribute, sameSite: 'Strict', path: '/'});
 
+            // close signup modal
+            handleCloseSignup();
+
             navigate('/');
         } catch (error) {
             if (error && error.response.status === 400) {
                 setLocalError(error.response.data.error);
+                clearLocalError();
             } else if (error && error.response.status === 500) {
                 console.error('Signup failed: ', error);
                 setLocalError(error);
+                clearLocalError();
             }
         }
     };
 
     return (
-        <div className="container">
-            <div className="row align-items-center justify-content-center">
-                <div className="col-lg-6">
-                    <h3 className="text-center">Signup</h3>
+        <Modal show={showSignupModal} onHide={handleCloseSignup}>
+            <Modal.Header closeButton>
+                <h2 className="text-center">Signup</h2>
+            </Modal.Header>
+            <Modal.Body>
                     <Form onSubmit={handleSignupSubmit}>
                         <Form.Group>
                             <Form.Label>Email:</Form.Label>
@@ -99,10 +114,14 @@ const Signup = () => {
                         {localError && <p className="error-message d-flex align-items-center"><MdErrorOutline />{localError}</p>}
                         <Button type="submit" variant="primary mt-2">Signup</Button>
                     </Form>
-                    <NavLink to="/login" className="mt-2">Already registered? Login here</NavLink>
-                </div>
-            </div>           
-        </div>
+            </Modal.Body>
+            <Modal.Footer>
+                Already registered?
+                <NavLink onClick={() => {handleCloseSignup(); handleOpenLogin();}}>
+                    Login here
+                </NavLink>
+            </Modal.Footer>      
+        </Modal>
     );
 };
 

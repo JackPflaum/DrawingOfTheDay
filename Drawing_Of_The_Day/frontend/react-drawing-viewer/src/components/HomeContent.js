@@ -6,7 +6,6 @@ import UploadModal from './UploadModal';
 import MessageModal from './MessageModal';
 import { format } from 'date-fns';
 import { useAuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 
 
@@ -17,13 +16,11 @@ const HomeContent = () => {
     const handleClose = () => setModalShow(false);
 
     // for handling opening and closing of Message Modal
+    const defaultMessage = 'You can only upload a drawing for today\'s current text prompt.';
     const [ openMessageModal, setOpenMessageModal ] = useState(false);
+    const [ message, setMessage ] = useState(defaultMessage);
     const handleMessageOpen = () => setOpenMessageModal(true);
-    const handleMessageClose = () => setOpenMessageModal(false);
-
-
-    // for redirecting user to certain page
-    const navigate = useNavigate();
+    const handleMessageClose = () => {setOpenMessageModal(false); setMessage(defaultMessage);};
 
     // extract user to determine if they are authorized
     const { user } = useAuthContext();
@@ -111,11 +108,12 @@ const HomeContent = () => {
     }
 
     const openUploadModal = () => {
-        // redirect user to login page if user is not logged in
+        // open upload modal if user logged in or tell user to login first
         if (user) {
             setModalShow(true);
         } else {
-            navigate('/login');
+            setMessage('Login first to upload an image.');
+            setOpenMessageModal(true);
         }
     };
 
@@ -135,8 +133,11 @@ const HomeContent = () => {
                 )}
                 { modalShow && <UploadModal modalShow={modalShow} handleClose={handleClose} handleUploadSuccess={handleUploadSuccess} />}
                 
-                {/* Message Modal: for when users try upload on a date other than today */}
-                { openMessageModal && <MessageModal openMessageModal={openMessageModal} handleMessageClose={handleMessageClose} />}
+                {/* Message Modal: for when users not logged in or try upload on a date other than today */}
+                { openMessageModal && <MessageModal
+                                        openMessageModal={openMessageModal}
+                                        handleMessageClose={handleMessageClose}
+                                        message={message}/>}
 
                 <div className="d-flex col-lg-4 col-md-4">
                     <Form.Select name="orderOptions" className="me-1" onChange={handleOrderChange}>

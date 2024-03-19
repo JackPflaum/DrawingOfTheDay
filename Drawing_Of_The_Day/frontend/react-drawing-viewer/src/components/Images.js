@@ -99,20 +99,20 @@ const Images = ({ imagesList }) => {
         <div>
             { image.like === true && (
                 <div className="custom-font">
-                    <HiThumbUp onClick={() => handleLikeDislike(image.id, null)} /> {image.likesCount}
-                    <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.dislikesCount}
+                    <HiThumbUp onClick={() => handleLikeDislike(image.id, null)} className="custom-link" /> {image.likesCount}
+                    <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} className="custom-link" /> {image.dislikesCount}
                 </div>
             )}
             { image.like === false && (
                 <div className="custom-font">
-                    <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesCount}
-                    <HiThumbDown onClick={() => handleLikeDislike(image.id, null)} /> {image.dislikesCount}
+                    <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} className="custom-link" /> {image.likesCount}
+                    <HiThumbDown onClick={() => handleLikeDislike(image.id, null)} className="custom-link" /> {image.dislikesCount}
                 </div>
              )}
              { image.like === null && (
                  <div className="custom-font">
-                     <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} /> {image.likesCount}
-                     <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} /> {image.dislikesCount}
+                     <HiOutlineThumbUp onClick={() => handleLikeDislike(image.id, true)} className="custom-link" /> {image.likesCount}
+                     <HiOutlineThumbDown onClick={() => handleLikeDislike(image.id, false)} className="custom-link" /> {image.dislikesCount}
                  </div>
              )}
         </div>

@@ -23,27 +23,27 @@ h1, h2, h3, h4, h5, h6, .nav-heading {
     background-color: white;
 }
 
-.nav-item.nav-link {
-    text-decoration: none;
-    transition: color 0.3s ease;
-    color: black;
+.zoom {
+    transition: transform 0.3s ease;
 }
 
-.nav-item.nav-link:hover {
-    color: red;
+.zoom:hover {
+    transform: scale(1.1);   /* zoom the image 20% */
 }
 
-/*username link associated with image*/
+/*username link associated with image and navbar links*/
 .custom-link {
     text-decoration: none;
     color: black;
+    transition: transform 0.3s ease;
 }
 
 .custom-link:hover {
-    text-decoration: underline;
     color: black;
+    transform: scale(1.1);
 }
 
+/*success message styling*/
 .success-message {
     color: green;
 }

@@ -1,6 +1,6 @@
 import { Modal, Button } from 'react-bootstrap';
 
-const MessageModal = ({ openMessageModal, handleMessageClose }) => {
+const MessageModal = ({ openMessageModal, handleMessageClose, message }) => {
 
     return (
         <Modal show={openMessageModal} onHide={handleMessageClose}>
@@ -10,7 +10,7 @@ const MessageModal = ({ openMessageModal, handleMessageClose }) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                You can only upload a drawing for today's current text prompt.
+                {message}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleMessageClose}>Close</Button>

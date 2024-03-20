@@ -58,20 +58,22 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="container">
-            <div className="row align-items-center justify-content-center">
-                <div className="col-lg-6">
-                    <h3 className="text-center">Reset Password</h3>
-                    <p>Please enter your email address and we will send you an email to reset your password.</p>
-                    { message && <p className="success-message d-flex align-items-center"><GrStatusGood />{message}</p>}
-                    <Form.Control
-                        type="text"
-                        value={email}
-                        name="email"
-                        placeholder="Enter your email"
-                        onChange={(e) => setEmail(e.target.value)} />
-                        { errorLocal && <p className="error-message d-flex align-items-center"><MdErrorOutline />{errorLocal}</p>}
-                    <Button variant="primary mt-2" onClick={handleForgotPassword}>Send Email</Button>
+        <div className="container d-flex justify-content-center align-items-center">
+            <div className="col-lg-6">
+                <div className="card mt-5">
+                    <div className="card-body">
+                        <h3 className="text-center mb-4">Reset Password</h3>
+                        <p className="text-center">Please enter your email address and we will send you an email to reset your password.</p>
+                        {message && <p className="success-message d-flex align-items-center"><GrStatusGood />{message}</p>}
+                        <Form.Control
+                            type="text"
+                            value={email}
+                            name="email"
+                            placeholder="Enter your email"
+                            onChange={(e) => setEmail(e.target.value)} />
+                        {errorLocal && <p className="error-message d-flex align-items-center"><MdErrorOutline />{errorLocal}</p>}
+                        <Button variant="primary mt-2" onClick={handleForgotPassword}>Send Email</Button>
+                    </div>
                 </div>
             </div>
         </div>

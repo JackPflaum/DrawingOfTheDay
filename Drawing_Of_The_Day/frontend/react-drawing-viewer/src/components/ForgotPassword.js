@@ -12,9 +12,17 @@ const ForgotPassword = () => {
     const [ errorLocal, setErrorLocal ] = useState('');
     const [ message, setMessage ] = useState('');
 
+    // clears the local error messages after 3 seconds
+    const clearLocalError = () => {
+        setTimeout(() => {
+            setErrorLocal('');
+        }, 3000);
+    }
+
     const handleForgotPassword = async () => {
         if (!email) {
             setErrorLocal('Email field is required.');
+            clearLocalError();
             return;
         }
 
@@ -22,7 +30,8 @@ const ForgotPassword = () => {
         const emailExists = await confirmEmailExists(email)
 
         if (!emailExists) {
-            setErrorLocal('User with this email does not exist.')
+            setErrorLocal('User with this email does not exist.');
+            clearLocalError();
             return;
         }
 

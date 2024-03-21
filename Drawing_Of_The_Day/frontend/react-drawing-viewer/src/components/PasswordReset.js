@@ -19,14 +19,23 @@ const PasswordReset = () => {
     // PasswordReset component error messages
     const [ errorLocal, setErrorLocal ] = useState('');
 
+    // clears the local error messages after 3 seconds
+    const clearLocalError = () => {
+        setTimeout(() => {
+            setErrorLocal('');
+        }, 3000);
+    }
+
     const handlePasswordReset = async () => {
         if (!password1 || !password2) {
             setErrorLocal('Both password fields are required.');
+            clearLocalError();
             return;
         }
 
         if (password1 !== password2) {
             setErrorLocal('Passwords do not match.');
+            clearLocalError();
             return;
         }
 
@@ -39,12 +48,13 @@ const PasswordReset = () => {
             // handle success response
             console.log('Password reset successful:', response.data);
 
-            // navigate back to login so user can log in with new password
-            navigate('/login')
+            // navigate back to home and user can then log in with new password
+            navigate('/')
         } catch (error) {
             // handle error response
             console.log('Password reset error: ', error.response);
             setErrorLocal('An error occured. Please try again.');
+            clearLocalError();
         }
     };
 

@@ -36,7 +36,7 @@ const UserProfile = () => {
         <div>
             <h4 className="text-center mt-3">{username}</h4>
             { imagesList ? (<Images imagesList={imagesList} />) : (
-                <h5 className="text-center">You have not uploaded any drawings.</h5>
+                <h5 className="text-center mt-5">No drawings have beem uploaded yet.</h5>
             )}
         </div>
     );

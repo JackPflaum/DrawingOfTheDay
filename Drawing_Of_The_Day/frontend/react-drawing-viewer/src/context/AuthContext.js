@@ -11,6 +11,13 @@ export const AuthProvider = ({ children }) => {
     const [ user, setUser ] = useState(null);
     const [ error, setError ] = useState('')
 
+    // clears the error message after 5 seconds
+    const clearError = () => {
+        setTimeout(() => {
+            setError('');
+        }, 5000);
+    }
+
     // check if the user is authenticated when the component mounts and set user details
     useEffect(() => {
         const checkAuthenticationStatus = async () => {
@@ -70,7 +77,8 @@ export const AuthProvider = ({ children }) => {
             } else {
                 console.log(error);
                 console.log(error.response);
-                setError('Login Failed. Please try again.');   
+                setError('Login Failed. Please try again.');
+                clearError();
             }
             throw new Error('Login Failed. Please try again.');    
         }

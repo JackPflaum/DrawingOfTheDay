@@ -57,8 +57,14 @@ const Signup = ({ showSignupModal, handleCloseSignup, handleOpenLogin }) => {
 
             navigate('/');
         } catch (error) {
-            if (error && error.response.status === 400) {
-                setLocalError(error.response.data.error);
+            if (error && error.response && error.response.status === 400) {
+                // extract error string from validation error response:
+                // {error: {'email': [ErrorDetail(string='A user is already using this email.', code='invalid')]}}
+                const errorMessage = error.response.data.error.match(/string='([^']+)'/)[1];
+
+                setLocalError(errorMessage);
+
+                // clear after 3 seconds
                 clearLocalError();
             } else if (error && error.response.status === 500) {
                 console.error('Signup failed: ', error);

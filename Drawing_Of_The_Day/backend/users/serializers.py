@@ -11,7 +11,13 @@ class UserSignupSerializer(serializers.Serializer):
     def validate_email(self, value):
         """check if email is unique"""
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError({'error': 'A user is already using this email.'})
+            raise serializers.ValidationError('A user is already using this email.')
+        return value;
+
+    def validate_username(self, value):
+        """check if username is unique"""
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError('This username is already taken')
         return value;
 
     def validate(self, data):

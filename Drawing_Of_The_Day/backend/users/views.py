@@ -43,12 +43,11 @@ def signup(request):
             refresh_token = RefreshToken.for_user(user)
 
             return Response({'access': str(access_token), 'refresh': str(refresh_token)}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
-
     except serializers.ValidationError as validation_error:
+        print('Validation Error: ', validation_error)
         return Response({'error': str(validation_error)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as error:
+        print('Error: ', error)
         return Response({'error': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

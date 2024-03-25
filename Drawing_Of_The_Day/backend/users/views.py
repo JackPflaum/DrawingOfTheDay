@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from backend.drawings.models import Image
 from backend.drawings.serializers import ImageSerializer
+from rest_framework.authentication import get_authorization_header
+from rest_framework.exceptions import AuthenticationFailed
 
 
 @api_view(['GET'])
@@ -97,5 +99,22 @@ def delete_image(request):
         return Response({'success': 'Drawing has been successfully deleted.'}, status=status.HTTP_200_OK)
     except Image.DoesNotExist:
         return Response({'error': 'Drawing not found or you do not have permission to delete this drawing'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as error:
+        return Response({'error': f'Something went wrong: {str(error)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_account(request):
+    """deletes user profile"""
+    try:
+        # get user from database and delete
+        user_id = request.data.get('user_id')
+        user_object = User.objects.get(id=user_id)
+        user_object.delete()
+
+        return Response({'success': 'User has been successfully deleted'}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({'error': 'User you are trying to delete does not exist'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as error:
         return Response({'error': f'Something went wrong: {str(error)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -6,10 +6,10 @@ import UploadModal from './UploadModal';
 import MessageModal from './MessageModal';
 import { format } from 'date-fns';
 import { useAuthContext } from '../context/AuthContext';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Alert } from 'react-bootstrap';
 
 
-const HomeContent = () => {
+const HomeContent = ({ alertMessage}) => {
     // for handling opening and closing of Upload Image modal
     const [ modalShow, setModalShow ] = useState(false);
     const handleShow = () => setModalShow(true);
@@ -120,6 +120,12 @@ const HomeContent = () => {
 
     return (
         <div className="container">
+            { alertMessage && (
+                <Alert key="success" variant="success" dismissible>
+                    {alertMessage}
+                </Alert>
+            )}
+
             { data.date && data.imagePrompt ? (
                 <Header date={data.date} imagePrompt={data.imagePrompt} />
             ) : (

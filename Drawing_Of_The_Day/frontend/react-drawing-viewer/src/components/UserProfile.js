@@ -105,7 +105,7 @@ const UserProfile = ({ showAlertMessage }) => {
 
             {/* User images displayed here */}
             { imagesList ? (<Images imagesList={imagesList} />) : (
-                <h5 className="text-center mt-5">No drawings have beem uploaded yet.</h5>
+                <h5 className="text-center mt-5">No drawings have been uploaded yet.</h5>
             )}
         </div>
     );

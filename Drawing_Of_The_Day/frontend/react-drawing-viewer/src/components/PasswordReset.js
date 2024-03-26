@@ -6,7 +6,7 @@ import { MdErrorOutline } from "react-icons/md";
 
 
 // create new user password
-const PasswordReset = () => {
+const PasswordReset = ({ showAlertMessage }) => {
     // extract reset token query parameter from of the URL
     const location = useLocation();
     const token = new URLSearchParams(location.search).get('token');
@@ -47,6 +47,7 @@ const PasswordReset = () => {
 
             // handle success response
             console.log('Password reset successful:', response.data);
+            showAlertMessage('Your password has been successfully reset.');
 
             // navigate back to home and user can then log in with new password
             navigate('/')

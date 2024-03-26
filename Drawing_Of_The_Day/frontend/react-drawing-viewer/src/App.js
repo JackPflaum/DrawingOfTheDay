@@ -10,11 +10,11 @@ import { useState } from 'react';
 
 
 const App = () => {
-  // success message for deletion of account
+  // success message for deletion of account or successful password reset
   const [ alertMessage, setAlertMessage ] = useState('');
 
-  const showAlertMessage = () => {
-    setAlertMessage('You have successfully deleted your account.');
+  const showAlertMessage = (message) => {
+    setAlertMessage(message);
   }
 
   return (
@@ -23,7 +23,7 @@ const App = () => {
         <Route index element={<HomeContent alertMessage={alertMessage} />} />    {/* this is the default child route when '/' path is rendered */}
         <Route path='/profile/:userId' element={<UserProfile showAlertMessage={showAlertMessage} />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/password-reset/confirm' element={<PasswordReset />} />
+        <Route path='/password-reset/confirm' element={<PasswordReset showAlertMessage={showAlertMessage} />} />
         <Route path='*' element={<NoMatch />} />
       </Route>
     </Routes>
